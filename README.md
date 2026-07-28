@@ -12,6 +12,8 @@
 2. 爬取某个现网域名的解析链资源记录，并尝试在本地创建虚拟环境，为其修复 DNSSEC 部署错误，并输出 BIND9/PowerDNS 的配置文件。
 3. 提供 BIND9/PowerDNS 的 DNSSEC 典型错误 demo 演示。
 
+其中，现网未部署 DNSSEC 的域名可以直接走第 1 条工作流：工具会读取现网解析链和业务记录，在本地生成带 DNSSEC 的 BIND9/PowerDNS 配置包。从修复视角看，这也可以理解为把“DNSSEC 缺失”规约为本地部署修复。
+
 ## 运行环境
 
 推荐系统：Debian 12 / Ubuntu 22.04+。本工具会启动本地 53 端口服务并配置 loopback IP，建议在开发机、虚拟机或容器中运行。`demo`、`realcase-demo`、`repair-realcase` 会在运行结束后自动清理本地 DNS 服务。
@@ -39,6 +41,8 @@ python3 -m pip install --break-system-packages \
 ## 常用命令
 
 ### 1. 现网解析链记录 + 本地 DNSSEC 部署
+
+适用于现网尚未部署 DNSSEC 的域名：工具会抓取现有解析记录，在本地生成 DNSSEC key、DS、签名 zone 和对应后端配置。
 
 BIND9：
 
@@ -130,6 +134,8 @@ python3 powerdns_lab.py demo bad-ds
 ## Docker 运行
 
 Docker 版本同样覆盖三条核心工作流：现网部署、现网错误修复、典型错误 demo。需要 Docker daemon 可用，并允许容器使用 `NET_ADMIN` capability。
+
+对于未部署 DNSSEC 的现网域名，使用 Docker 版 `deploy-realcase` 即可生成本地 DNSSEC 部署配置包。
 
 构建镜像：
 

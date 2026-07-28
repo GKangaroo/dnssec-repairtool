@@ -12,6 +12,8 @@ The local environment preserves source-shaped domain names. For example, `dnssec
 2. Fetch resolution-chain records for a public domain, create a local virtual DNS environment, repair DNSSEC deployment errors, and export readable BIND9/PowerDNS configuration files.
 3. Provide BIND9/PowerDNS demos for typical DNSSEC errors.
 
+For a public domain that has not deployed DNSSEC, use the first workflow directly: the tool reads the existing public resolution chain and service records, then generates a local DNSSEC-enabled BIND9/PowerDNS configuration bundle. From a repair perspective, this can also be treated as locally repairing a missing DNSSEC deployment.
+
 ## Runtime Environment
 
 Recommended system: Debian 12 / Ubuntu 22.04+. The tool starts local DNS services on port 53 and configures loopback IPs, so it is best used inside a devbox, VM, or container. `demo`, `realcase-demo`, and `repair-realcase` automatically clean up local DNS services when they finish.
@@ -39,6 +41,8 @@ The system dependency list above already installs `dnsviz`; normal usage does no
 ## Common Commands
 
 ### 1. Public resolution chain + local DNSSEC deployment
+
+Use this for public domains that have not deployed DNSSEC yet. The tool fetches existing DNS records and locally generates DNSSEC keys, DS records, signed zones, and backend configuration.
 
 BIND9:
 
@@ -130,6 +134,8 @@ Scenarios are defined in `dnssec_scenarios/`, including `bad-ds`, `expired-rrsig
 ## Docker Usage
 
 The Docker version supports the same three core workflows: public-domain deployment, public DNSSEC error repair, and typical error demos. Docker daemon must be available, and the container needs the `NET_ADMIN` capability.
+
+For a public domain without DNSSEC, use Docker `deploy-realcase` to generate a local DNSSEC deployment bundle.
 
 Build images:
 
