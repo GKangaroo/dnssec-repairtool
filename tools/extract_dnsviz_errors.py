@@ -6,7 +6,10 @@ from pathlib import Path
 
 
 LAB_ROOT = Path(__file__).resolve().parents[1]
-REPO = LAB_ROOT.parent / "dnsviz"
+REPO = next(
+    (path for path in (LAB_ROOT / "dnsviz", LAB_ROOT.parent / "dnsviz") if (path / "dnsviz").is_dir()),
+    LAB_ROOT / "dnsviz",
+)
 ERRORS = REPO / "dnsviz" / "analysis" / "errors.py"
 OUT_JSON = LAB_ROOT / "docs" / "dnsviz_error_coverage.json"
 OUT_MD = LAB_ROOT / "docs" / "dnsviz_error_coverage.md"

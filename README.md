@@ -34,7 +34,7 @@ python3 -m pip install --break-system-packages \
   faker pandas publicsuffixlist requests tldextract tqdm
 ```
 
-可选：如果你希望使用本地新版 DNSViz 源码，可以把 `dnsviz/` 放在本项目的上一级目录。没有这个源码目录时，工具会使用系统安装的 `dnsviz` 命令。核心部署、修复计划和修复执行都由本项目代码实现，不依赖外部 DFixer 仓库。
+上面的系统依赖已经包含 `dnsviz`，正常使用不需要再准备 DNSViz 源码目录。可选：如果你希望替换为本地新版 DNSViz 源码，可以把源码放在本项目目录下的 `dnsviz/`；没有这个目录时，工具会直接使用系统安装的 `dnsviz` 命令。核心部署、修复计划和修复执行都由本项目代码实现，不依赖外部 DFixer 仓库。
 
 ## 常用命令
 

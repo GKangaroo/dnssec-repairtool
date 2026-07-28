@@ -1,6 +1,6 @@
 # DNSViz 错误复现覆盖矩阵
 
-来源：`/mlx_devbox/users/guiqingxin.gqx/playground/dnssec-tool/dnsviz/dnsviz/analysis/errors.py`
+来源：DNSViz `dnsviz/analysis/errors.py`
 错误码总数：`154`
 
 ## 状态统计

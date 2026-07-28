@@ -29,7 +29,7 @@ CONF = WORK / "conf"
 RUN = WORK / "run"
 OUT = WORK / "out"
 SHIM = WORK / "shim"
-DNSVIZ_REPO = ROOT.parent / "dnsviz"
+DNSVIZ_REPO_CANDIDATES = (ROOT / "dnsviz", ROOT.parent / "dnsviz")
 
 AUTH = {
     "root": {"zone": ".", "ip": "127.10.0.1", "file": "db.root"},
@@ -1928,9 +1928,13 @@ def print_error_codes(grok: Path) -> None:
 
 
 def ensure_local_dnsviz_config() -> None:
-    config = DNSVIZ_REPO / "dnsviz" / "config.py"
+    repo = local_dnsviz_repo()
+    if repo is None:
+        return
+    config = repo / "dnsviz" / "config.py"
     if config.exists():
         return
+    config.parent.mkdir(parents=True, exist_ok=True)
     config.write_text(
         """from __future__ import unicode_literals\n"""
         """import os\n"""
@@ -1945,10 +1949,16 @@ def ensure_local_dnsviz_config() -> None:
     )
 
 
+def local_dnsviz_repo() -> Path | None:
+    for repo in DNSVIZ_REPO_CANDIDATES:
+        if (repo / "dnsviz").is_dir():
+            return repo
+    return None
+
+
 def dnsviz_env():
-    # Use the cloned DNSViz source instead of Debian's older package, because
-    # RFC 9276/NSEC3 diagnostics used by several scenarios are only present in
-    # newer DNSViz releases.
+    # Prefer a local DNSViz source tree when present; otherwise use the
+    # system-installed dnsviz command from PATH.
     ensure_local_dnsviz_config()
     sitecustomize = SHIM / "sitecustomize.py"
     sitecustomize.write_text(
@@ -1957,8 +1967,9 @@ def dnsviz_env():
     )
     env = os.environ.copy()
     paths = [str(SHIM)]
-    if DNSVIZ_REPO.exists():
-        paths.append(str(DNSVIZ_REPO))
+    repo = local_dnsviz_repo()
+    if repo is not None:
+        paths.append(str(repo))
     if env.get("PYTHONPATH"):
         paths.append(env["PYTHONPATH"])
     env["PYTHONPATH"] = os.pathsep.join(paths)

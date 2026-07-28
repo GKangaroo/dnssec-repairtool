@@ -6,6 +6,9 @@ __pycache__/
 work/
 realcase-live/
 
+# Optional local DNSViz source override.
+dnsviz/
+
 # Generated validation artifacts.
 artifacts/
 

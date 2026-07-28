@@ -34,7 +34,7 @@ python3 -m pip install --break-system-packages \
   faker pandas publicsuffixlist requests tldextract tqdm
 ```
 
-Optional: if you want to use a local newer DNSViz source tree, place `dnsviz/` next to this project directory. Without that source tree, the tool uses the system-installed `dnsviz` command. Core deployment, repair planning, and repair execution are implemented by this project and do not require an external DFixer repository.
+The system dependency list above already installs `dnsviz`; normal usage does not require a DNSViz source tree. Optional: if you want to override it with a local newer DNSViz source tree, place the source under `dnsviz/` inside this project directory. Without that directory, the tool uses the system-installed `dnsviz` command. Core deployment, repair planning, and repair execution are implemented by this project and do not require an external DFixer repository.
 
 ## Common Commands
 

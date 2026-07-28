@@ -30,7 +30,6 @@ RUN python3 -m pip install --break-system-packages --no-cache-dir \
 WORKDIR /app
 
 COPY dnssec-local-lab /app/dnssec-local-lab
-COPY dnsviz /app/dnsviz
 
 WORKDIR /app/dnssec-local-lab
 
