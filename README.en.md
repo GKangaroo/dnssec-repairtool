@@ -34,17 +34,7 @@ python3 -m pip install --break-system-packages \
   faker pandas publicsuffixlist requests tldextract tqdm
 ```
 
-Prepare external source trees in this layout:
-
-```text
-dnssec-tool/
-├── dnssec-local-lab/
-└── dnsviz/
-```
-
-Where `dnsviz/` is the DNSViz source tree used for newer DNSViz diagnostics. Core deployment, repair planning, and repair execution are implemented by this project and do not require an external DFixer repository.
-
-Some offline unit tests can run without the external DNSViz source tree. Full demos should have this directory available.
+Optional: if you want to use a local newer DNSViz source tree, place `dnsviz/` next to this project directory. Without that source tree, the tool uses the system-installed `dnsviz` command. Core deployment, repair planning, and repair execution are implemented by this project and do not require an external DFixer repository.
 
 ## Common Commands
 

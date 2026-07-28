@@ -34,17 +34,7 @@ python3 -m pip install --break-system-packages \
   faker pandas publicsuffixlist requests tldextract tqdm
 ```
 
-准备外部工具源码。目录结构需要如下：
-
-```text
-dnssec-tool/
-├── dnssec-local-lab/
-└── dnsviz/
-```
-
-其中 `dnsviz/` 是 DNSViz 源码目录，用于新版 DNSViz 诊断。核心部署、修复计划和修复执行都由本项目代码实现，不依赖外部 DFixer 仓库。
-
-如果只跑部分离线单元测试，外部 DNSViz 源码可以缺失；如果要跑完整 demo，建议准备好该目录。
+可选：如果你希望使用本地新版 DNSViz 源码，可以把 `dnsviz/` 放在本项目的上一级目录。没有这个源码目录时，工具会使用系统安装的 `dnsviz` 命令。核心部署、修复计划和修复执行都由本项目代码实现，不依赖外部 DFixer 仓库。
 
 ## 常用命令
 
