@@ -1,0 +1,40 @@
+FROM debian:bookworm
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONUNBUFFERED=1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    bind9 \
+    bind9-utils \
+    bind9-dnsutils \
+    dnsutils \
+    dnsviz \
+    graphviz \
+    iproute2 \
+    libgraphviz-dev \
+    pdns-backend-bind \
+    pdns-server \
+    python3 \
+    python3-pip \
+    python3-pygraphviz \
+    python3-venv \
+    procps \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN python3 -m pip install --break-system-packages --no-cache-dir \
+    faker \
+    pandas \
+    publicsuffixlist \
+    requests \
+    tldextract \
+    tqdm
+
+WORKDIR /app
+
+COPY dnssec-local-lab /app/dnssec-local-lab
+COPY dnsviz /app/dnsviz
+
+WORKDIR /app/dnssec-local-lab
+
+ENTRYPOINT ["python3", "powerdns_lab.py"]
+CMD ["--help"]

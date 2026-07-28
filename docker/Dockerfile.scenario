@@ -1,0 +1,8 @@
+ARG BASE_IMAGE=dnssec-local-lab:latest
+FROM ${BASE_IMAGE}
+
+ARG SCENARIO
+ENV DNSSEC_SCENARIO=${SCENARIO}
+
+ENTRYPOINT ["sh", "-c"]
+CMD ["exec python3 dnssec_lab.py demo \"$DNSSEC_SCENARIO\""]

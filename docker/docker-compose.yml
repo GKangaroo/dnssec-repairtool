@@ -1,0 +1,12 @@
+services:
+  dnssec-lab:
+    build:
+      context: ../..
+      dockerfile: dnssec-local-lab/docker/Dockerfile
+    image: dnssec-local-lab:latest
+    container_name: dnssec-local-lab
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ../work-docker:/app/dnssec-local-lab/work
+    working_dir: /app/dnssec-local-lab

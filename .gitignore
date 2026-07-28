@@ -1,0 +1,20 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Runtime-generated lab state.
+work/
+realcase-live/
+
+# Generated validation artifacts.
+artifacts/
+
+# Local editor / OS files.
+.DS_Store
+.idea/
+.vscode/
+
+# Local logs and temporary outputs.
+*.log
+*.tmp
+*.pid

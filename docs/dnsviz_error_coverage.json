@@ -1,0 +1,1850 @@
+[
+  {
+    "class": "CDNSKEYDeleteMultipleRecords",
+    "code": "CDNSKEY_DELETE_MULTIPLE_RECORDS",
+    "bases": [
+      "DNSSECDeleteMultipleRecords"
+    ],
+    "description": "",
+    "category": "CDNSKEYCDSError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "CDNSKEYInconsistentWithCDS",
+    "code": "CDNSKEY_INCONSISTENT_WITH_CDS",
+    "bases": [
+      "CDNSKEYCDSError"
+    ],
+    "description": "The contents of the CDNSKEY RRset are inconsistent with those of the CDS RRset.",
+    "category": "CDNSKEYCDSError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "cdnskey-inconsistent-with-cds"
+  },
+  {
+    "class": "CDNSKEYInconsistentWithDS",
+    "code": "CDNSKEY_INCONSISTENT_WITH_DS",
+    "bases": [
+      "DSConsistencyError"
+    ],
+    "description": "",
+    "category": "CDNSKEYCDSError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "cdnskey-inconsistent-with-ds"
+  },
+  {
+    "class": "CDNSKEYRecordIncorrectDeleteValues",
+    "code": "CDNSKEY_INCORRECT_DELETE_VALUES",
+    "bases": [
+      "DNSSECDeleteRecordIncorrectValues"
+    ],
+    "description": "The contents of a %(rdtype)s record used for DNSSEC deletion (algorithm 0) should be 0, 3, 0, AA==.",
+    "category": "CDNSKEYCDSError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "CDNSKEYSignerInvalid",
+    "code": "CDNSKEY_SIGNER_INVALID",
+    "bases": [
+      "CDNSKEYCDSSignerInvalid"
+    ],
+    "description": "",
+    "category": "CDNSKEYCDSError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "cdnskey-signer-invalid"
+  },
+  {
+    "class": "CDSDeleteMultipleRecords",
+    "code": "CDS_DELETE_MULTIPLE_RECORDS",
+    "bases": [
+      "DNSSECDeleteMultipleRecords"
+    ],
+    "description": "",
+    "category": "CDNSKEYCDSError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "CDSInconsistentWithDS",
+    "code": "CDS_INCONSISTENT_WITH_DS",
+    "bases": [
+      "DSConsistencyError"
+    ],
+    "description": "",
+    "category": "CDNSKEYCDSError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "cds-inconsistent-with-ds"
+  },
+  {
+    "class": "CDSRecordIncorrectDeleteValues",
+    "code": "CDS_INCORRECT_DELETE_VALUES",
+    "bases": [
+      "DNSSECDeleteRecordIncorrectValues"
+    ],
+    "description": "The contents of a %(rdtype)s record used for DNSSEC deletion (algorithm 0) should be 0, 0, 0, 00.",
+    "category": "CDNSKEYCDSError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "CDSSignerInvalid",
+    "code": "CDS_SIGNER_INVALID",
+    "bases": [
+      "CDNSKEYCDSSignerInvalid"
+    ],
+    "description": "",
+    "category": "CDNSKEYCDSError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "cds-signer-invalid"
+  },
+  {
+    "class": "MultipleCDNSKEY",
+    "code": "MULTIPLE_CDNSKEY",
+    "bases": [
+      "MultipleCDNSKEYCDS"
+    ],
+    "description": "",
+    "category": "CDNSKEYCDSError",
+    "status": "deferred-custom-responder",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "MultipleCDS",
+    "code": "MULTIPLE_CDS",
+    "bases": [
+      "MultipleCDNSKEYCDS"
+    ],
+    "description": "",
+    "category": "CDNSKEYCDSError",
+    "status": "deferred-custom-responder",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "DNAMENoCNAME",
+    "code": "DNAME_NO_CNAME",
+    "bases": [
+      "DNAMEError"
+    ],
+    "description": "No synthesized CNAME RR was found accompanying the DNAME record.",
+    "category": "DNAMEError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "DNAMETargetMismatch",
+    "code": "DNAME_TARGET_MISMATCH",
+    "bases": [
+      "DNAMEError"
+    ],
+    "description": "The included CNAME RR is not a valid synthesis of the DNAME record (%(included_target)s != %(synthesized_target)s).",
+    "category": "DNAMEError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "DNAMETTLMismatch",
+    "code": "DNAME_TTL_MISMATCH",
+    "bases": [
+      "DNAMEError"
+    ],
+    "description": "The TTL of the synthesized CNAME RR (%(cname_ttl)d) does not match the TTL of the DNAME record (%(dname_ttl)d).",
+    "category": "DNAMEError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "DNAMETTLZero",
+    "code": "DNAME_TTL_ZERO",
+    "bases": [
+      "DNAMEError"
+    ],
+    "description": "The TTL of the synthesized CNAME RR is 0.",
+    "category": "DNAMEError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "DNSKEYBadLengthECDSA256",
+    "code": "DNSKEY_BAD_LENGTH_ECDSA256",
+    "bases": [
+      "DNSKEYBadLengthECDSA"
+    ],
+    "description": "",
+    "category": "DNSKEYError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "dnskey-bad-length-ecdsa256"
+  },
+  {
+    "class": "DNSKEYBadLengthECDSA384",
+    "code": "DNSKEY_BAD_LENGTH_ECDSA384",
+    "bases": [
+      "DNSKEYBadLengthECDSA"
+    ],
+    "description": "",
+    "category": "DNSKEYError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "dnskey-bad-length-ecdsa384"
+  },
+  {
+    "class": "DNSKEYBadLengthEd25519",
+    "code": "DNSKEY_BAD_LENGTH_ED25519",
+    "bases": [
+      "DNSKEYBadLengthEdDSA"
+    ],
+    "description": "",
+    "category": "DNSKEYError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "dnskey-bad-length-ed25519"
+  },
+  {
+    "class": "DNSKEYBadLengthEd448",
+    "code": "DNSKEY_BAD_LENGTH_ED448",
+    "bases": [
+      "DNSKEYBadLengthEdDSA"
+    ],
+    "description": "",
+    "category": "DNSKEYError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "dnskey-bad-length-ed448"
+  },
+  {
+    "class": "DNSKEYBadLengthGOST",
+    "code": "DNSKEY_BAD_LENGTH_GOST",
+    "bases": [
+      "DNSKEYBadLength"
+    ],
+    "description": "The length of the key is %(length)d bits, but a GOST public key (DNSSEC algorithm 12) must be 512 bits long.",
+    "category": "DNSKEYError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "DNSKEYMissingFromServers",
+    "code": "DNSKEY_MISSING_FROM_SERVERS",
+    "bases": [
+      "DNSKEYError"
+    ],
+    "description": "The DNSKEY RR was not found in the DNSKEY RRset returned by one or more servers.",
+    "category": "DNSKEYError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "DNSKEYNotAtZoneApex",
+    "code": "DNSKEY_NOT_AT_ZONE_APEX",
+    "bases": [
+      "DNSKEYError"
+    ],
+    "description": "The owner name of the DNSKEY RRset (%(name)s) does not match the zone apex (%(zone)s).",
+    "category": "DNSKEYError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "DNSKEYZeroLength",
+    "code": "DNSKEY_ZERO_LENGTH",
+    "bases": [
+      "DNSKEYBadLength"
+    ],
+    "description": "The length of the key is 0 bits.",
+    "category": "DNSKEYError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "RevokedNotSigning",
+    "code": "REVOKED_NOT_SIGNING",
+    "bases": [
+      "DNSKEYError"
+    ],
+    "description": "The key was revoked but was not found signing the RRset.",
+    "category": "DNSKEYError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "dnskey-revoked-rrsig"
+  },
+  {
+    "class": "DigestAlgorithmNotRecommended",
+    "code": "DIGEST_ALGORITHM_NOT_RECOMMENDED",
+    "bases": [
+      "DSDigestError"
+    ],
+    "description": "DNSSEC implementers are recommended against implementing signing with DS algorithm %(algorithm)d (%(algorithm_text)s).",
+    "category": "DSError",
+    "status": "inactive-dnsviz-policy",
+    "repro_method": "dnsviz-inactive-condition",
+    "scenario": ""
+  },
+  {
+    "class": "DigestAlgorithmNotSupported",
+    "code": "DIGEST_ALGORITHM_NOT_SUPPORTED",
+    "bases": [
+      "DSDigestError"
+    ],
+    "description": "Generating cryptographic hashes using algorithm %(algorithm)d (%(algorithm_text)s) is not supported by this code, so the cryptographic status of the DS RR is unknown.",
+    "category": "DSError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "digest-algorithm-not-supported"
+  },
+  {
+    "class": "DigestAlgorithmProhibited",
+    "code": "DIGEST_ALGORITHM_PROHIBITED",
+    "bases": [
+      "DSDigestError"
+    ],
+    "description": "DNSSEC implementers are prohibited from implementing signing with DS algorithm %(algorithm)d (%(algorithm_text)s).",
+    "category": "DSError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "ds-digest-algorithm-prohibited"
+  },
+  {
+    "class": "DigestAlgorithmValidationProhibited",
+    "code": "DIGEST_ALGORITHM_VALIDATION_PROHIBITED",
+    "bases": [
+      "DSDigestError"
+    ],
+    "description": "DNSSEC implementers are prohibited from implementing validation of DS algorithm %(algorithm)d (%(algorithm_text)s).",
+    "category": "DSError",
+    "status": "inactive-dnsviz-policy",
+    "repro_method": "dnsviz-inactive-condition",
+    "scenario": ""
+  },
+  {
+    "class": "DigestInvalid",
+    "code": "DIGEST_INVALID",
+    "bases": [
+      "DSDigestError"
+    ],
+    "description": "The cryptographic hash in the Digest field of the DS RR does not match the computed value.",
+    "category": "DSError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "bad-ds"
+  },
+  {
+    "class": "DNSKEYRevokedDS",
+    "code": "DNSKEY_REVOKED_DS",
+    "bases": [
+      "DSDigestError"
+    ],
+    "description": "The DNSKEY RR corresponding to the DS RR has the REVOKE bit set.  A revoked key cannot be used with DS records.",
+    "category": "DSError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "dnskey-revoked-ds"
+  },
+  {
+    "class": "DSDigestAlgorithmIgnored",
+    "code": "DS_DIGEST_ALGORITHM_IGNORED",
+    "bases": [
+      "DSError"
+    ],
+    "description": "DS records with digest type %(algorithm)d (%(algorithm_text)s) are ignored when DS records with digest type %(new_algorithm)d (%(new_algorithm_text)s) exist in the same RRset.",
+    "category": "DSError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "ds-digest-algorithm-prohibited / ds-digest-algorithm-maybe-ignored"
+  },
+  {
+    "class": "DSDigestAlgorithmMaybeIgnored",
+    "code": "DS_DIGEST_ALGORITHM_MAYBE_IGNORED",
+    "bases": [
+      "DSError"
+    ],
+    "description": "In the spirit of RFC 4509, DS records with digest type %(algorithm)d (%(algorithm_text)s) might be ignored when DS records with digest type %(new_algorithm)d (%(new_algorithm_text)s) exist in the same RRset.",
+    "category": "DSError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "ds-digest-algorithm-maybe-ignored"
+  },
+  {
+    "class": "ReferralForDSQuery",
+    "code": "REFERRAL_FOR_DS_QUERY",
+    "bases": [
+      "DSError"
+    ],
+    "description": "The server(s) for the parent zone (%(parent)s) responded with a referral instead of answering authoritatively for the DS RR type.",
+    "category": "DSError",
+    "status": "deferred-custom-responder",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "ErrorResolvingNSName",
+    "code": "ERROR_RESOLVING_NS_NAME",
+    "bases": [
+      "NSNameError"
+    ],
+    "description": "There was an error resolving the following NS name(s) to address(es): %(names_text)s",
+    "category": "DelegationError",
+    "status": "planned",
+    "repro_method": "bind-delegation-mutation",
+    "scenario": ""
+  },
+  {
+    "class": "ExtraGlueIPv4",
+    "code": "EXTRA_GLUE_IPV4",
+    "bases": [
+      "DelegationError"
+    ],
+    "description": "A glue records exist for %(name)s, but there are no corresponding authoritative A records.",
+    "category": "DelegationError",
+    "status": "planned",
+    "repro_method": "bind-delegation-mutation",
+    "scenario": ""
+  },
+  {
+    "class": "ExtraGlueIPv6",
+    "code": "EXTRA_GLUE_IPV6",
+    "bases": [
+      "DelegationError"
+    ],
+    "description": "AAAA glue records exist for %(name)s, but there are no corresponding authoritative AAAA records.",
+    "category": "DelegationError",
+    "status": "planned",
+    "repro_method": "bind-delegation-mutation",
+    "scenario": ""
+  },
+  {
+    "class": "GlueMismatchError",
+    "code": "GLUE_MISMATCH",
+    "bases": [
+      "DelegationError"
+    ],
+    "description": "The glue address(es) for %(name)s (%(glue_addresses_text)s) differed from its authoritative address(es) (%(auth_addresses_text)s).",
+    "category": "DelegationError",
+    "status": "planned",
+    "repro_method": "bind-delegation-mutation",
+    "scenario": ""
+  },
+  {
+    "class": "GlueReferencesPrivateIP",
+    "code": "GLUE_PRIVATE_IP",
+    "bases": [
+      "PrivateAddressNS"
+    ],
+    "description": "Glue for the following NS name(s) referenced IP address(es) in private IP address space: %(names_text)s",
+    "category": "DelegationError",
+    "status": "planned",
+    "repro_method": "bind-delegation-mutation",
+    "scenario": ""
+  },
+  {
+    "class": "MissingGlueForNSName",
+    "code": "MISSING_GLUE_FOR_NS_NAME",
+    "bases": [
+      "NSNameError"
+    ],
+    "description": "The following NS name(s) required glue, but no glue was returned in the referral: %(names_text)s",
+    "category": "DelegationError",
+    "status": "planned",
+    "repro_method": "bind-delegation-mutation",
+    "scenario": ""
+  },
+  {
+    "class": "MissingGlueIPv4",
+    "code": "MISSING_GLUE_IPV4",
+    "bases": [
+      "DelegationError"
+    ],
+    "description": "Authoritative A records exist for %(name)s, but there are no corresponding A glue records.",
+    "category": "DelegationError",
+    "status": "planned",
+    "repro_method": "bind-delegation-mutation",
+    "scenario": ""
+  },
+  {
+    "class": "MissingGlueIPv6",
+    "code": "MISSING_GLUE_IPV6",
+    "bases": [
+      "DelegationError"
+    ],
+    "description": "Authoritative AAAA records exist for %(name)s, but there are no corresponding AAAA glue records.",
+    "category": "DelegationError",
+    "status": "planned",
+    "repro_method": "bind-delegation-mutation",
+    "scenario": ""
+  },
+  {
+    "class": "MissingSEPForAlg",
+    "code": "MISSING_SEP_FOR_ALG",
+    "bases": [
+      "DelegationError"
+    ],
+    "description": "The %(source)s RRset for the zone included algorithm %(algorithm)d (%(algorithm_text)s), but no %(source)s RR matched a DNSKEY with algorithm %(algorithm)d that signs the zone's DNSKEY RRset.",
+    "category": "DelegationError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "missing-ksk"
+  },
+  {
+    "class": "NoAddressForNSName",
+    "code": "NO_ADDRESS_FOR_NS_NAME",
+    "bases": [
+      "NSNameError"
+    ],
+    "description": "The following NS name(s) did not resolve to address(es): %(names_text)s",
+    "category": "DelegationError",
+    "status": "planned",
+    "repro_method": "bind-delegation-mutation",
+    "scenario": ""
+  },
+  {
+    "class": "NoNSAddressesForIPv4",
+    "code": "NO_NS_ADDRESSES_FOR_IPV4",
+    "bases": [
+      "NoNSAddressesForIPVersion"
+    ],
+    "description": "No IPv%(version)d addresses were found for NS records in the %(reference)s zone.",
+    "category": "DelegationError",
+    "status": "planned",
+    "repro_method": "bind-delegation-mutation",
+    "scenario": ""
+  },
+  {
+    "class": "NoNSAddressesForIPv6",
+    "code": "NO_NS_ADDRESSES_FOR_IPV6",
+    "bases": [
+      "NoNSAddressesForIPVersion"
+    ],
+    "description": "No IPv%(version)d addresses were found for NS records in the %(reference)s zone.",
+    "category": "DelegationError",
+    "status": "planned",
+    "repro_method": "bind-delegation-mutation",
+    "scenario": ""
+  },
+  {
+    "class": "NoNSInParentNoData",
+    "code": "NO_NS_IN_PARENT_NODATA",
+    "bases": [
+      "NoNSInParent"
+    ],
+    "description": "No delegation NS records were detected in the parent zone (%(parent)s).  This results in a NODATA response to a DS query (for DNSSEC), even if the parent servers are authoritative for the child.",
+    "category": "DelegationError",
+    "status": "planned",
+    "repro_method": "bind-delegation-mutation",
+    "scenario": ""
+  },
+  {
+    "class": "NoNSInParentNXDOMAIN",
+    "code": "NO_NS_IN_PARENT_NXDOMAIN",
+    "bases": [
+      "NoNSInParent"
+    ],
+    "description": "No delegation NS records were detected in the parent zone (%(parent)s).  This results in an NXDOMAIN response to a DS query (for DNSSEC), even if the parent servers are authoritative for the child.",
+    "category": "DelegationError",
+    "status": "planned",
+    "repro_method": "bind-delegation-mutation",
+    "scenario": ""
+  },
+  {
+    "class": "NoSEP",
+    "code": "NO_SEP",
+    "bases": [
+      "DelegationError"
+    ],
+    "description": "No valid RRSIGs made by a key corresponding to a %(source)s RR were found covering the DNSKEY RRset, resulting in no secure entry point (SEP) into the zone.",
+    "category": "DelegationError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "bad-ds / expired-rrsig / missing-ksk"
+  },
+  {
+    "class": "NSNameNotInChild",
+    "code": "NS_NAME_NOT_IN_CHILD",
+    "bases": [
+      "NSNameError"
+    ],
+    "description": "The following NS name(s) were found in the delegation NS RRset (i.e., in the %(parent)s zone), but not in the authoritative NS RRset: %(names_text)s",
+    "category": "DelegationError",
+    "status": "planned",
+    "repro_method": "bind-delegation-mutation",
+    "scenario": ""
+  },
+  {
+    "class": "NSNameNotInParent",
+    "code": "NS_NAME_NOT_IN_PARENT",
+    "bases": [
+      "NSNameError"
+    ],
+    "description": "The following NS name(s) were found in the authoritative NS RRset, but not in the delegation NS RRset (i.e., in the %(parent)s zone): %(names_text)s",
+    "category": "DelegationError",
+    "status": "planned",
+    "repro_method": "bind-delegation-mutation",
+    "scenario": ""
+  },
+  {
+    "class": "NSNameResolvesToPrivateIP",
+    "code": "NS_NAME_PRIVATE_IP",
+    "bases": [
+      "PrivateAddressNS"
+    ],
+    "description": "The following NS name(s) resolved to IP address(es) in private IP address space: %(names_text)s",
+    "category": "DelegationError",
+    "status": "planned",
+    "repro_method": "bind-delegation-mutation",
+    "scenario": ""
+  },
+  {
+    "class": "ServerInvalidResponseTCP",
+    "code": "SERVER_INVALID_RESPONSE_TCP",
+    "bases": [
+      "DelegationError"
+    ],
+    "description": "The server(s) responded over TCP with a malformed response or with an invalid RCODE.",
+    "category": "DelegationError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "ServerInvalidResponseUDP",
+    "code": "SERVER_INVALID_RESPONSE_UDP",
+    "bases": [
+      "DelegationError"
+    ],
+    "description": "The server(s) responded over UDP with a malformed response or with an invalid RCODE.",
+    "category": "DelegationError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "ServerNotAuthoritative",
+    "code": "SERVER_NOT_AUTHORITATIVE",
+    "bases": [
+      "DelegationError"
+    ],
+    "description": "The server(s) did not respond authoritatively for the namespace.",
+    "category": "DelegationError",
+    "status": "planned",
+    "repro_method": "bind-delegation-mutation",
+    "scenario": ""
+  },
+  {
+    "class": "ServerUnresponsiveTCP",
+    "code": "SERVER_UNRESPONSIVE_TCP",
+    "bases": [
+      "ServerUnresponsive"
+    ],
+    "description": "",
+    "category": "DelegationError",
+    "status": "planned",
+    "repro_method": "bind-delegation-mutation",
+    "scenario": ""
+  },
+  {
+    "class": "ServerUnresponsiveUDP",
+    "code": "SERVER_UNRESPONSIVE_UDP",
+    "bases": [
+      "ServerUnresponsive"
+    ],
+    "description": "",
+    "category": "DelegationError",
+    "status": "planned",
+    "repro_method": "bind-delegation-mutation",
+    "scenario": ""
+  },
+  {
+    "class": "FormError",
+    "code": "FORMERR",
+    "bases": [
+      "InvalidResponseError"
+    ],
+    "description": "The response (%(msg_size)d bytes) was malformed.",
+    "category": "InvalidResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "InvalidRcode",
+    "code": "INVALID_RCODE",
+    "bases": [
+      "InvalidResponseError"
+    ],
+    "description": "The response had an invalid RCODE (%(rcode)s).",
+    "category": "InvalidResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "NetworkError",
+    "code": "NETWORK_ERROR",
+    "bases": [
+      "InvalidResponseError"
+    ],
+    "description": "%(description)s",
+    "category": "InvalidResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "UnknownResponseError",
+    "code": "RESPONSE_ERROR",
+    "bases": [
+      "InvalidResponseError"
+    ],
+    "description": "An invalid response was received from the server over %(proto)s.",
+    "category": "InvalidResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "Timeout",
+    "code": "TIMEOUT",
+    "bases": [
+      "InvalidResponseError"
+    ],
+    "description": "No response was received from the server over %(proto)s (tried %(attempts)d times).",
+    "category": "InvalidResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "ExistingCovered",
+    "code": "EXISTING_NAME_COVERED",
+    "bases": [
+      "ExistingNSECError"
+    ],
+    "description": "The following queries resulted in an answer response, even though the %(nsec_type)s records indicate that the queried names don't exist: %(queries_text)s",
+    "category": "NSECError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "ExistingTypeNotInBitmap",
+    "code": "EXISTING_TYPE_NOT_IN_BITMAP",
+    "bases": [
+      "ExistingNSECError"
+    ],
+    "description": "The following queries resulted in an answer response, even though the bitmap in the %(nsec_type)s RR indicates that the queried records don't exist: %(queries_text)s",
+    "category": "NSECError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "existing-type-not-in-bitmap"
+  },
+  {
+    "class": "InvalidNSEC3Hash",
+    "code": "INVALID_NSEC3_HASH",
+    "bases": [
+      "NSECError"
+    ],
+    "description": "The NSEC3 record for %(name)s is invalid; the value of the Next Hashed Owner Name field (%(nsec3_hash)s) does not appear to be a valid hash.",
+    "category": "NSECError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "InvalidNSEC3OwnerName",
+    "code": "INVALID_NSEC3_OWNER_NAME",
+    "bases": [
+      "NSECError"
+    ],
+    "description": "The %(nsec_type)s owner name (%(name)s) is invalid; it does not appear to be the Base32 Hex encoding of a hashed owner name.",
+    "category": "NSECError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "LastNSECNextNotZone",
+    "code": "LAST_NSEC_NEXT_NOT_ZONE",
+    "bases": [
+      "NSECError"
+    ],
+    "description": "The value of the Next Domain Name field in the %(nsec_type)s RR with owner name %(nsec_owner)s indicates that it is the last %(nsec_type)s RR in the zone, but the value (%(next_name)s) did not match the name of the zone apex (%(zone_name)s).",
+    "category": "NSECError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "last-nsec-next-not-zone"
+  },
+  {
+    "class": "NextClosestEncloserNotCovered",
+    "code": "NEXT_CLOSEST_ENCLOSER_NOT_COVERED",
+    "bases": [
+      "NSECError"
+    ],
+    "description": "No %(nsec_type)s RR covers the next closest encloser (%(next_closest_encloser)s).",
+    "category": "NSECError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "NonEmptyNSEC3Salt",
+    "code": "NONEMPTY_NSEC3_SALT",
+    "bases": [
+      "NSECError"
+    ],
+    "description": "The salt value for an %(nsec_type)s record should be empty.",
+    "category": "NSECError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "nonzero-nsec3-iteration-count"
+  },
+  {
+    "class": "NonZeroNSEC3IterationCount",
+    "code": "NONZERO_NSEC3_ITERATION_COUNT",
+    "bases": [
+      "NSECError"
+    ],
+    "description": "An iterations count of 0 must be used in %(nsec_type)s records to alleviate computational burdens.",
+    "category": "NSECError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "nonzero-nsec3-iteration-count"
+  },
+  {
+    "class": "NoClosestEncloser",
+    "code": "NO_CLOSEST_ENCLOSER",
+    "bases": [
+      "NSECError"
+    ],
+    "description": "No %(nsec_type)s RR corresponds to the closest encloser of the SNAME (%(sname)s).",
+    "category": "NSECError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "no-closest-encloser"
+  },
+  {
+    "class": "NoNSEC3MatchingSname",
+    "code": "NO_NSEC3_MATCHING_SNAME",
+    "bases": [
+      "NSECError"
+    ],
+    "description": "No %(nsec_type)s RR matches the SNAME (%(sname)s).",
+    "category": "NSECError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "no-nsec3-matching-sname"
+  },
+  {
+    "class": "NoNSECMatchingSname",
+    "code": "NO_NSEC_MATCHING_SNAME",
+    "bases": [
+      "NSECError"
+    ],
+    "description": "No %(nsec_type)s RR matches the SNAME (%(sname)s).",
+    "category": "NSECError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "no-nsec-matching-sname"
+  },
+  {
+    "class": "OptOutFlagNotSet",
+    "code": "OPT_OUT_FLAG_NOT_SET",
+    "bases": [
+      "NSECError"
+    ],
+    "description": "The opt-out flag was not set in the %(nsec_type)s RR covering the next closest encloser (%(next_closest_encloser)s) but was required for the NODATA response.",
+    "category": "NSECError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "ReferralWithoutNSBit",
+    "code": "REFERRAL_WITHOUT_NS",
+    "bases": [
+      "NSECError"
+    ],
+    "description": "The NS bit was not set in the bitmap of the %(nsec_type)s RR corresponding to the delegated name (%(sname)s).",
+    "category": "NSECError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "referral-without-ns"
+  },
+  {
+    "class": "ReferralWithDSBit",
+    "code": "REFERRAL_WITH_DS",
+    "bases": [
+      "NSECError"
+    ],
+    "description": "The DS bit was set in the bitmap of the %(nsec_type)s RR corresponding to the delegated name (%(sname)s).",
+    "category": "NSECError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "referral-with-ds"
+  },
+  {
+    "class": "ReferralWithSOABit",
+    "code": "REFERRAL_WITH_SOA",
+    "bases": [
+      "NSECError"
+    ],
+    "description": "The SOA bit was set in the bitmap of the %(nsec_type)s RR corresponding to the delegated name (%(sname)s).",
+    "category": "NSECError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "referral-with-soa"
+  },
+  {
+    "class": "SnameCoveredNODATANSEC",
+    "code": "SNAME_COVERED",
+    "bases": [
+      "NSECError"
+    ],
+    "description": "The %(nsec_type)s RR covers the SNAME (%(sname)s), indicating that it doesn't exist.",
+    "category": "NSECError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "SnameNotCovered",
+    "code": "SNAME_NOT_COVERED",
+    "bases": [
+      "NSECError"
+    ],
+    "description": "No %(nsec_type)s RR covers the SNAME (%(sname)s).",
+    "category": "NSECError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "sname-not-covered"
+  },
+  {
+    "class": "StypeInBitmap",
+    "code": "STYPE_IN_BITMAP",
+    "bases": [
+      "NSECError"
+    ],
+    "description": "The %(stype)s bit was set in the bitmap of the %(nsec_type)s RR corresponding to the SNAME (%(sname)s).",
+    "category": "NSECError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "stype-in-bitmap"
+  },
+  {
+    "class": "UnsupportedNSEC3Algorithm",
+    "code": "UNSUPPORTED_NSEC3_ALGORITHM",
+    "bases": [
+      "NSECError"
+    ],
+    "description": "Generating %(nsec_type)s hashes using algorithm %(algorithm)d is not supported by this code.",
+    "category": "NSECError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "WildcardCovered",
+    "code": "WILDCARD_COVERED",
+    "bases": [
+      "NSECError"
+    ],
+    "description": "The %(nsec_type)s RR covers the wildcard itself (%(wildcard)s), indicating that it doesn't exist.",
+    "category": "NSECError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "wildcard-covered"
+  },
+  {
+    "class": "WildcardExpansionInvalid",
+    "code": "WILDCARD_EXPANSION_INVALID",
+    "bases": [
+      "NSECError"
+    ],
+    "description": "The wildcard expansion of %(wildcard)s to %(sname)s is invalid, as the %(nsec_type)s RR indicates that the next closest encloser (%(next_closest_encloser)s) exists.",
+    "category": "NSECError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "WildcardNotCovered",
+    "code": "WILDCARD_NOT_COVERED",
+    "bases": [
+      "NSECError"
+    ],
+    "description": "No %(nsec_type)s RR covers the wildcard (%(wildcard)s).",
+    "category": "NSECError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "wildcard-not-covered"
+  },
+  {
+    "class": "AlgorithmNotRecommended",
+    "code": "ALGORITHM_NOT_RECOMMENDED",
+    "bases": [
+      "RRSIGError"
+    ],
+    "description": "DNSSEC implementers are recommended against implementing signing with DNSSEC algorithm %(algorithm)d (%(algorithm_text)s).",
+    "category": "RRSIGError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "algorithm-not-recommended"
+  },
+  {
+    "class": "AlgorithmNotSupported",
+    "code": "ALGORITHM_NOT_SUPPORTED",
+    "bases": [
+      "RRSIGError"
+    ],
+    "description": "Validation of DNSSEC algorithm %(algorithm)d (%(algorithm_text)s) is not supported by this code, so the cryptographic status of this RRSIG is unknown.",
+    "category": "RRSIGError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "algorithm-not-supported"
+  },
+  {
+    "class": "AlgorithmProhibited",
+    "code": "ALGORITHM_PROHIBITED",
+    "bases": [
+      "RRSIGError"
+    ],
+    "description": "DNSSEC implementers are prohibited from implementing signing with DNSSEC algorithm %(algorithm)d (%(algorithm_text)s).",
+    "category": "RRSIGError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "algorithm-prohibited"
+  },
+  {
+    "class": "AlgorithmValidationProhibited",
+    "code": "ALGORITHM_VALIDATION_PROHIBITED",
+    "bases": [
+      "RRSIGError"
+    ],
+    "description": "DNSSEC implementers are prohibited from implementing validation of DNSSEC algorithm %(algorithm)d (%(algorithm_text)s).",
+    "category": "RRSIGError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "algorithm-prohibited"
+  },
+  {
+    "class": "DNSKEYRevokedRRSIG",
+    "code": "DNSKEY_REVOKED_RRSIG",
+    "bases": [
+      "RRSIGError"
+    ],
+    "description": "The DNSKEY RR corresponding to the RRSIG RR has the REVOKE bit set.  A revoked key cannot be used to validate RRSIGs.",
+    "category": "RRSIGError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "dnskey-revoked-rrsig"
+  },
+  {
+    "class": "ExpirationInPast",
+    "code": "EXPIRATION_IN_PAST",
+    "bases": [
+      "RRSIGError"
+    ],
+    "description": "The Signature Expiration field of the RRSIG RR (%(expiration)s) is %(expired_time)s in the past.",
+    "category": "RRSIGError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "expired-rrsig"
+  },
+  {
+    "class": "ExpirationWithinClockSkew",
+    "code": "EXPIRATION_WITHIN_CLOCK_SKEW",
+    "bases": [
+      "RRSIGError"
+    ],
+    "description": "The value of the Signature Expiration field of the RRSIG RR (%(expiration)s) is within possible clock skew range (%(difference)s) of the current time (%(reference_time)s).",
+    "category": "RRSIGError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "expiration-within-clock-skew"
+  },
+  {
+    "class": "InceptionInFuture",
+    "code": "INCEPTION_IN_FUTURE",
+    "bases": [
+      "RRSIGError"
+    ],
+    "description": "The Signature Inception field of the RRSIG RR (%(inception)s) is %(premature_time)s in the future.",
+    "category": "RRSIGError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "future-rrsig"
+  },
+  {
+    "class": "InceptionWithinClockSkew",
+    "code": "INCEPTION_WITHIN_CLOCK_SKEW",
+    "bases": [
+      "RRSIGError"
+    ],
+    "description": "The value of the Signature Inception field of the RRSIG RR (%(inception)s) is within possible clock skew range (%(difference)s) of the current time (%(reference_time)s).",
+    "category": "RRSIGError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "inception-within-clock-skew"
+  },
+  {
+    "class": "OriginalTTLExceededRRset",
+    "code": "ORIGINAL_TTL_EXCEEDED_RRSET",
+    "bases": [
+      "OriginalTTLExceeded"
+    ],
+    "description": "The TTL of the RRset (%(rrset_ttl)d) exceeds the value of the Original TTL field of the RRSIG RR covering it (%(original_ttl)d).",
+    "category": "RRSIGError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "original-ttl-exceeded-rrset"
+  },
+  {
+    "class": "OriginalTTLExceededRRSIG",
+    "code": "ORIGINAL_TTL_EXCEEDED_RRSIG",
+    "bases": [
+      "OriginalTTLExceeded"
+    ],
+    "description": "The TTL of the RRSIG (%(rrsig_ttl)d) exceeds the value of its Original TTL field (%(original_ttl)d).",
+    "category": "RRSIGError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "original-ttl-exceeded-rrsig"
+  },
+  {
+    "class": "RRsetTTLMismatch",
+    "code": "RRSET_TTL_MISMATCH",
+    "bases": [
+      "RRSIGError"
+    ],
+    "description": "The TTL of the RRSIG RR (%(rrsig_ttl)d) does not match the TTL of the RRset it covers (%(rrset_ttl)d).",
+    "category": "RRSIGError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "rrset-ttl-mismatch"
+  },
+  {
+    "class": "RRSIGBadLengthECDSA256",
+    "code": "RRSIG_BAD_LENGTH_ECDSA256",
+    "bases": [
+      "RRSIGBadLengthECDSA"
+    ],
+    "description": "",
+    "category": "RRSIGError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "RRSIGBadLengthECDSA384",
+    "code": "RRSIG_BAD_LENGTH_ECDSA384",
+    "bases": [
+      "RRSIGBadLengthECDSA"
+    ],
+    "description": "",
+    "category": "RRSIGError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "RRSIGBadLengthEd25519",
+    "code": "RRSIG_BAD_LENGTH_ED25519",
+    "bases": [
+      "RRSIGBadLengthEdDSA"
+    ],
+    "description": "",
+    "category": "RRSIGError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "RRSIGBadLengthEd448",
+    "code": "RRSIG_BAD_LENGTH_ED448",
+    "bases": [
+      "RRSIGBadLengthEdDSA"
+    ],
+    "description": "",
+    "category": "RRSIGError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "RRSIGBadLengthGOST",
+    "code": "RRSIG_BAD_LENGTH_GOST",
+    "bases": [
+      "RRSIGBadLength"
+    ],
+    "description": "The length of the signature is %(length)d bits, but a GOST signature (DNSSEC algorithm 12) must be 512 bits long.",
+    "category": "RRSIGError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "RRSIGLabelsExceedRRsetOwnerLabels",
+    "code": "RRSIG_LABELS_EXCEED_RRSET_OWNER_LABELS",
+    "bases": [
+      "RRSIGError"
+    ],
+    "description": "The value of the labels field of the RRSIG RR (%(rrsig_labels)d) exceeds the number of labels in the RRset owner name (%(rrset_owner_labels)d).",
+    "category": "RRSIGError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "rrsig-labels-exceed-owner-labels"
+  },
+  {
+    "class": "SignatureInvalid",
+    "code": "SIGNATURE_INVALID",
+    "bases": [
+      "RRSIGError"
+    ],
+    "description": "The cryptographic signature of the RRSIG RR does not properly validate.",
+    "category": "RRSIGError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "signature-invalid / missing-ksk"
+  },
+  {
+    "class": "SignerNotZone",
+    "code": "SIGNER_NOT_ZONE",
+    "bases": [
+      "RRSIGError"
+    ],
+    "description": "The Signer's Name field of the RRSIG RR (%(signer_name)s) does not match the name of the zone containing the RRset (%(zone_name)s).",
+    "category": "RRSIGError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "signer-not-zone"
+  },
+  {
+    "class": "TTLBeyondExpiration",
+    "code": "TTL_BEYOND_EXPIRATION",
+    "bases": [
+      "RRSIGError"
+    ],
+    "description": "With a TTL of %(rrsig_ttl)d the RRSIG RR can be in the cache of a non-validating resolver until %(difference)s after it expires at %(expiration)s.",
+    "category": "RRSIGError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "ttl-beyond-expiration"
+  },
+  {
+    "class": "AuthoritativeReferral",
+    "code": "AUTHORITATIVE_REFERRAL",
+    "bases": [
+      "ResponseError"
+    ],
+    "description": "The Authoritative Answer (AA) flag was set in the referral response.",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "CasePreservationError",
+    "code": "CASE_NOT_PRESERVED",
+    "bases": [
+      "ResponseError"
+    ],
+    "description": "The case of the query name (%(qname)s) was not preserved in the Question section of the response.",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "ClientCookieMismatch",
+    "code": "CLIENT_COOKIE_MISMATCH",
+    "bases": [
+      "DNSCookieError"
+    ],
+    "description": "The client cookie returned by the server did not match what was sent.",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "CookieInvalidLength",
+    "code": "COOKIE_INVALID_LENGTH",
+    "bases": [
+      "DNSCookieError"
+    ],
+    "description": "The cookie returned by the server had an invalid length of %(length)d bytes.",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "DNSSECDowngradeDOBitCleared",
+    "code": "DNSSEC_DOWNGRADE_DO_CLEARED",
+    "bases": [
+      "DNSSECDowngrade"
+    ],
+    "description": "",
+    "category": "ResponseError",
+    "status": "deferred-custom-responder",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "DNSSECDowngradeEDNSDisabled",
+    "code": "DNSSEC_DOWNGRADE_EDNS_DISABLED",
+    "bases": [
+      "DNSSECDowngrade"
+    ],
+    "description": "",
+    "category": "ResponseError",
+    "status": "deferred-custom-responder",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "EDNSIgnored",
+    "code": "EDNS_IGNORED",
+    "bases": [
+      "EDNSError"
+    ],
+    "description": "The server responded with no OPT record, rather than with RCODE FORMERR.",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "EDNSSupportNoOpt",
+    "code": "EDNS_SUPPORT_NO_OPT",
+    "bases": [
+      "EDNSError"
+    ],
+    "description": "The server appeared to understand EDNS by including RRSIG records, but its response included no OPT record.",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "EDNSUndefinedFlagsSet",
+    "code": "EDNS_UNDEFINED_FLAGS_SET",
+    "bases": [
+      "EDNSError"
+    ],
+    "description": "The server set EDNS flags that are undefined: %(flags_text)s.",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "EDNSVersionMismatch",
+    "code": "EDNS_VERSION_MISMATCH",
+    "bases": [
+      "EDNSError"
+    ],
+    "description": "The server responded with EDNS version %(response_version)d when a request with EDNS version %(request_version)d was sent, instead of responding with RCODE BADVERS.",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "ResponseErrorWithoutEDNSFlag",
+    "code": "ERROR_WITHOUT_EDNS_FLAG",
+    "bases": [
+      "ResponseErrorWithCondition"
+    ],
+    "description": "",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "ResponseErrorWithoutEDNSOption",
+    "code": "ERROR_WITHOUT_EDNS_OPTION",
+    "bases": [
+      "ResponseErrorWithCondition"
+    ],
+    "description": "",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "ResponseErrorWithoutRequestFlag",
+    "code": "ERROR_WITHOUT_REQUEST_FLAG",
+    "bases": [
+      "ResponseErrorWithCondition"
+    ],
+    "description": "",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "ResponseErrorWithEDNS",
+    "code": "ERROR_WITH_EDNS",
+    "bases": [
+      "ResponseErrorWithCondition"
+    ],
+    "description": "",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "ResponseErrorWithEDNSFlag",
+    "code": "ERROR_WITH_EDNS_FLAG",
+    "bases": [
+      "ResponseErrorWithCondition"
+    ],
+    "description": "",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "ResponseErrorWithEDNSOption",
+    "code": "ERROR_WITH_EDNS_OPTION",
+    "bases": [
+      "ResponseErrorWithCondition"
+    ],
+    "description": "",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "ResponseErrorWithEDNSVersion",
+    "code": "ERROR_WITH_EDNS_VERSION",
+    "bases": [
+      "ResponseErrorWithCondition"
+    ],
+    "description": "",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "ResponseErrorWithRequestFlag",
+    "code": "ERROR_WITH_REQUEST_FLAG",
+    "bases": [
+      "ResponseErrorWithCondition"
+    ],
+    "description": "",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "ForeignClassDataAdditional",
+    "code": "FOREIGN_CLASS_DATA_ADDITIONAL",
+    "bases": [
+      "ForeignClassData"
+    ],
+    "description": "",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "ForeignClassDataAnswer",
+    "code": "FOREIGN_CLASS_DATA_ANSWER",
+    "bases": [
+      "ForeignClassData"
+    ],
+    "description": "",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "ForeignClassDataAuthority",
+    "code": "FOREIGN_CLASS_DATA_AUTHORITY",
+    "bases": [
+      "ForeignClassData"
+    ],
+    "description": "",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "GratuitousCookie",
+    "code": "GRATUITOUS_COOKIE",
+    "bases": [
+      "DNSCookieError"
+    ],
+    "description": "The server sent a COOKIE option when none was sent by the client.",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "GratuitousOPT",
+    "code": "GRATUITOUS_OPT",
+    "bases": [
+      "EDNSError"
+    ],
+    "description": "The server responded with an OPT record, even though none was sent in the request.",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "ImplementedEDNSVersionNotProvided",
+    "code": "IMPLEMENTED_EDNS_VERSION_NOT_PROVIDED",
+    "bases": [
+      "EDNSError"
+    ],
+    "description": "The server responded with BADVERS to EDNS version %(request_version)d but responded with version %(response_version)d instead of providing the highest EDNS version it implements.",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "InconsistentNXDOMAIN",
+    "code": "INCONSISTENT_NXDOMAIN",
+    "bases": [
+      "ResponseError"
+    ],
+    "description": "The server returned a no error (NOERROR) response when queried for %(qname)s having record data of type %(rdtype_noerror)s, but returned a name error (NXDOMAIN) when queried for %(qname)s having record data of type %(rdtype_nxdomain)s.",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "InconsistentNXDOMAINAncestry",
+    "code": "INCONSISTENT_NXDOMAIN_ANCESTOR",
+    "bases": [
+      "ResponseError"
+    ],
+    "description": "A query for %(qname)s results in a NOERROR response, while a query for its ancestor, %(ancestor_qname)s, returns a name error (NXDOMAIN), which indicates that subdomains of %(ancestor_qname)s, including %(qname)s, don't exist.",
+    "category": "ResponseError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  },
+  {
+    "class": "InvalidServerCookieWithoutBADCOOKIE",
+    "code": "INVALID_SERVER_COOKIE_WITHOUT_BADCOOKIE",
+    "bases": [
+      "DNSCookieError"
+    ],
+    "description": "The server appears to support DNS cookies but did not return a BADCOOKIE status when an invalid server cookie was sent.",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "MalformedCookieWithoutFORMERR",
+    "code": "MALFORMED_COOKIE_WITHOUT_FORMERR",
+    "bases": [
+      "DNSCookieError"
+    ],
+    "description": "The server appears to support DNS cookies but did not return a FORMERR status when issued a malformed COOKIE option.",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "MissingNSECForNODATA",
+    "code": "MISSING_NSEC_FOR_NODATA",
+    "bases": [
+      "MissingNSEC"
+    ],
+    "description": "",
+    "category": "ResponseError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "missing-nsec-for-nodata"
+  },
+  {
+    "class": "MissingNSECForNXDOMAIN",
+    "code": "MISSING_NSEC_FOR_NXDOMAIN",
+    "bases": [
+      "MissingNSEC"
+    ],
+    "description": "",
+    "category": "ResponseError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "missing-nsec-for-nxdomain"
+  },
+  {
+    "class": "MissingNSECForWildcard",
+    "code": "MISSING_NSEC_FOR_WILDCARD",
+    "bases": [
+      "MissingNSEC"
+    ],
+    "description": "",
+    "category": "ResponseError",
+    "status": "triage",
+    "repro_method": "manual-classification-needed",
+    "scenario": ""
+  },
+  {
+    "class": "MissingRRSIG",
+    "code": "MISSING_RRSIG",
+    "bases": [
+      "ResponseError"
+    ],
+    "description": "No RRSIG covering the RRset was returned in the response.",
+    "category": "ResponseError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "missing-rrsig"
+  },
+  {
+    "class": "MissingRRSIGForAlgDLV",
+    "code": "MISSING_RRSIG_FOR_ALG_DLV",
+    "bases": [
+      "MissingRRSIGForAlg"
+    ],
+    "description": "",
+    "category": "ResponseError",
+    "status": "triage",
+    "repro_method": "manual-classification-needed",
+    "scenario": ""
+  },
+  {
+    "class": "MissingRRSIGForAlgDNSKEY",
+    "code": "MISSING_RRSIG_FOR_ALG_DNSKEY",
+    "bases": [
+      "MissingRRSIGForAlg"
+    ],
+    "description": "",
+    "category": "ResponseError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "missing-rrsig-for-alg-dnskey"
+  },
+  {
+    "class": "MissingRRSIGForAlgDS",
+    "code": "MISSING_RRSIG_FOR_ALG_DS",
+    "bases": [
+      "MissingRRSIGForAlg"
+    ],
+    "description": "",
+    "category": "ResponseError",
+    "status": "deferred-custom-responder",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "MissingSOAForNODATA",
+    "code": "MISSING_SOA_FOR_NODATA",
+    "bases": [
+      "MissingSOA"
+    ],
+    "description": "",
+    "category": "ResponseError",
+    "status": "deferred-custom-responder",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "MissingSOAForNXDOMAIN",
+    "code": "MISSING_SOA_FOR_NXDOMAIN",
+    "bases": [
+      "MissingSOA"
+    ],
+    "description": "",
+    "category": "ResponseError",
+    "status": "deferred-custom-responder",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "NotAuthoritative",
+    "code": "NOT_AUTHORITATIVE",
+    "bases": [
+      "ResponseError"
+    ],
+    "description": "The Authoritative Answer (AA) flag was not set in the response.",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "NoCookieOption",
+    "code": "NO_COOKIE_OPTION",
+    "bases": [
+      "DNSCookieError"
+    ],
+    "description": "The server appears to support DNS cookies but did not return a COOKIE option.",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "NoServerCookie",
+    "code": "NO_SERVER_COOKIE",
+    "bases": [
+      "DNSCookieError"
+    ],
+    "description": "The server appears to support DNS cookies but did not return a server cookie with its COOKIE option.",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "NoServerCookieWithoutBADCOOKIE",
+    "code": "NO_SERVER_COOKIE_WITHOUT_BADCOOKIE",
+    "bases": [
+      "DNSCookieError"
+    ],
+    "description": "The server appears to support DNS cookies but did not return a BADCOOKIE status when no server cookie was sent.",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "PMTUExceeded",
+    "code": "PMTU_EXCEEDED",
+    "bases": [
+      "ResponseError"
+    ],
+    "description": "%(description)s",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "RecursionNotAvailable",
+    "code": "RECURSION_NOT_AVAILABLE",
+    "bases": [
+      "ResponseError"
+    ],
+    "description": "Recursion was desired, but the Recursion Available (RA) flag was not set in the response.",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "SOAOwnerNotZoneForNODATA",
+    "code": "SOA_NOT_OWNER_FOR_NODATA",
+    "bases": [
+      "SOAOwnerNotZone"
+    ],
+    "description": "",
+    "category": "ResponseError",
+    "status": "triage",
+    "repro_method": "manual-classification-needed",
+    "scenario": ""
+  },
+  {
+    "class": "SOAOwnerNotZoneForNXDOMAIN",
+    "code": "SOA_NOT_OWNER_FOR_NXDOMAIN",
+    "bases": [
+      "SOAOwnerNotZone"
+    ],
+    "description": "",
+    "category": "ResponseError",
+    "status": "triage",
+    "repro_method": "manual-classification-needed",
+    "scenario": ""
+  },
+  {
+    "class": "UnableToRetrieveDNSSECRecords",
+    "code": "UNABLE_TO_RETRIEVE_DNSSEC_RECORDS",
+    "bases": [
+      "ResponseError"
+    ],
+    "description": "The DNSSEC records necessary to validate the response could not be retrieved from the server.",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "UpwardReferral",
+    "code": "UPWARD_REFERRAL",
+    "bases": [
+      "ResponseError"
+    ],
+    "description": "The response was an upward referral.",
+    "category": "ResponseError",
+    "status": "planned",
+    "repro_method": "custom-dns-responder",
+    "scenario": ""
+  },
+  {
+    "class": "NoTrustAnchorSigning",
+    "code": "NO_TRUST_ANCHOR_SIGNING",
+    "bases": [
+      "TrustAnchorError"
+    ],
+    "description": "One or more keys were designated as trust anchors for %(zone)s, but none were found signing the DNSKEY RRset.",
+    "category": "TrustAnchorError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "no-trust-anchor-signing"
+  },
+  {
+    "class": "CNAMELoop",
+    "code": "CNAME_LOOP",
+    "bases": [
+      "ZoneDataError"
+    ],
+    "description": "This record results in a CNAME loop.",
+    "category": "ZoneDataError",
+    "status": "done",
+    "repro_method": "existing-lab",
+    "scenario": "cname-loop"
+  },
+  {
+    "class": "CNAMEWithOtherData",
+    "code": "CNAME_WITH_OTHER_DATA",
+    "bases": [
+      "ZoneDataError"
+    ],
+    "description": "The server returned CNAME for %(name)s, but records of other types exist at that name.",
+    "category": "ZoneDataError",
+    "status": "excluded-bind9",
+    "repro_method": "not-bind9-reproducible",
+    "scenario": ""
+  }
+]
