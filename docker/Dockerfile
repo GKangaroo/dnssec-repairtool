@@ -29,7 +29,7 @@ RUN python3 -m pip install --break-system-packages --no-cache-dir \
 
 WORKDIR /app
 
-COPY dnssec-local-lab /app/dnssec-local-lab
+COPY . /app/dnssec-local-lab
 
 WORKDIR /app/dnssec-local-lab
 

@@ -127,6 +127,67 @@ python3 powerdns_lab.py demo bad-ds
 
 Scenarios are defined in `dnssec_scenarios/`, including `bad-ds`, `expired-rrsig`, `signature-invalid`, and `missing-rrsig`.
 
+## Docker Usage
+
+The Docker version supports the same three core workflows: public-domain deployment, public DNSSEC error repair, and typical error demos. Docker daemon must be available, and the container needs the `NET_ADMIN` capability.
+
+Build images:
+
+```bash
+./docker/docker_lab.sh build
+./docker/powerdns_docker_lab.sh build
+```
+
+### 1. Public resolution chain + local DNSSEC deployment
+
+BIND9:
+
+```bash
+./docker/docker_lab.sh deploy-realcase example.org
+```
+
+PowerDNS:
+
+```bash
+./docker/powerdns_docker_lab.sh deploy-realcase example.org
+```
+
+### 2. Public DNSSEC error + local normalized repair
+
+BIND9:
+
+```bash
+./docker/docker_lab.sh repair-realcase dnssec-failed.org
+```
+
+PowerDNS:
+
+```bash
+./docker/powerdns_docker_lab.sh repair-realcase dnssec-failed.org
+```
+
+### 3. Typical DNSSEC error demos
+
+BIND9:
+
+```bash
+./docker/docker_lab.sh demo bad-ds
+```
+
+PowerDNS:
+
+```bash
+./docker/powerdns_docker_lab.sh demo bad-ds
+```
+
+Docker output directories:
+
+```text
+work-docker/              # BIND9 container runtime state
+work-powerdns-docker/     # PowerDNS container runtime state
+realcase-live-docker/     # exported config bundles from Docker runs
+```
+
 ## Output Files
 
 Real-world case outputs are written under `realcase-live/<domain>/`. For example:

@@ -8,6 +8,8 @@ usage() {
 用法：
   ./docker/powerdns_docker_lab.sh daemon
   ./docker/powerdns_docker_lab.sh build
+  ./docker/powerdns_docker_lab.sh deploy-realcase <domain>
+  ./docker/powerdns_docker_lab.sh repair-realcase <domain>
   ./docker/powerdns_docker_lab.sh build-scenario <scenario>
   ./docker/powerdns_docker_lab.sh build-all-scenarios
   ./docker/powerdns_docker_lab.sh demo <scenario>
@@ -22,6 +24,8 @@ usage() {
 
 示例：
   ./docker/powerdns_docker_lab.sh build
+  ./docker/powerdns_docker_lab.sh deploy-realcase example.org
+  ./docker/powerdns_docker_lab.sh repair-realcase dnssec-failed.org
   ./docker/powerdns_docker_lab.sh build-scenario bad-ds
   ./docker/powerdns_docker_lab.sh run-scenario bad-ds
 EOF
@@ -88,7 +92,7 @@ scenario_container() {
 }
 
 build_base_image() {
-  docker_cmd build -f docker/Dockerfile.powerdns -t dnssec-powerdns-lab:latest ..
+  docker_cmd build -f docker/Dockerfile.powerdns -t dnssec-powerdns-lab:latest .
 }
 
 build_scenario_image() {
@@ -115,6 +119,17 @@ run_scenario_image() {
     "$(scenario_image "$scenario")"
 }
 
+run_powerdns_container() {
+  mkdir -p work-powerdns-docker realcase-live-docker
+  docker_cmd run --rm \
+    --cap-add NET_ADMIN \
+    -v "$PWD/work-powerdns-docker:/app/dnssec-local-lab/work" \
+    -v "$PWD/realcase-live-docker:/app/dnssec-local-lab/realcase-live" \
+    -w /app/dnssec-local-lab \
+    --entrypoint python3 \
+    dnssec-powerdns-lab:latest "$@"
+}
+
 cmd="${1:-}"
 case "$cmd" in
   daemon)
@@ -138,6 +153,22 @@ case "$cmd" in
   build)
     build_base_image
     ;;
+  deploy-realcase)
+    domain="${2:-}"
+    if [[ -z "$domain" ]]; then
+      echo "缺少 domain，例如：./docker/powerdns_docker_lab.sh deploy-realcase example.org" >&2
+      exit 1
+    fi
+    run_powerdns_container dnssec_repair_engine.py deploy-realcase --backend powerdns --domain "$domain"
+    ;;
+  repair-realcase)
+    domain="${2:-}"
+    if [[ -z "$domain" ]]; then
+      echo "缺少 domain，例如：./docker/powerdns_docker_lab.sh repair-realcase dnssec-failed.org" >&2
+      exit 1
+    fi
+    run_powerdns_container dnssec_lab.py repair-realcase --backend powerdns --domain "$domain"
+    ;;
   build-scenario)
     build_scenario_image "${2:-}"
     ;;
@@ -151,10 +182,11 @@ case "$cmd" in
   demo)
     scenario="${2:-}"
     require_scenario "$scenario"
-    mkdir -p work-powerdns-docker
+    mkdir -p work-powerdns-docker realcase-live-docker
     docker_cmd run --rm \
       --cap-add NET_ADMIN \
       -v "$PWD/work-powerdns-docker:/app/dnssec-local-lab/work" \
+      -v "$PWD/realcase-live-docker:/app/dnssec-local-lab/realcase-live" \
       -w /app/dnssec-local-lab \
       dnssec-powerdns-lab:latest demo "$scenario"
     ;;
@@ -168,10 +200,11 @@ case "$cmd" in
     done < <(scenario_list)
     ;;
   shell)
-    mkdir -p work-powerdns-docker
+    mkdir -p work-powerdns-docker realcase-live-docker
     docker_cmd run --rm -it \
       --cap-add NET_ADMIN \
       -v "$PWD/work-powerdns-docker:/app/dnssec-local-lab/work" \
+      -v "$PWD/realcase-live-docker:/app/dnssec-local-lab/realcase-live" \
       -w /app/dnssec-local-lab \
       --entrypoint bash \
       dnssec-powerdns-lab:latest -l
@@ -181,7 +214,7 @@ case "$cmd" in
     while IFS= read -r scenario; do
       docker_cmd rm -f "$(scenario_container "$scenario")" 2>/dev/null || true
     done < <(scenario_list)
-    rm -rf work-powerdns-docker
+    rm -rf work-powerdns-docker realcase-live-docker
     ;;
   ""|-h|--help|help)
     usage

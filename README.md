@@ -127,6 +127,67 @@ python3 powerdns_lab.py demo bad-ds
 
 可用场景在 `dnssec_scenarios/` 中定义，例如 `bad-ds`、`expired-rrsig`、`signature-invalid`、`missing-rrsig`。
 
+## Docker 运行
+
+Docker 版本同样覆盖三条核心工作流：现网部署、现网错误修复、典型错误 demo。需要 Docker daemon 可用，并允许容器使用 `NET_ADMIN` capability。
+
+构建镜像：
+
+```bash
+./docker/docker_lab.sh build
+./docker/powerdns_docker_lab.sh build
+```
+
+### 1. 现网解析链记录 + 本地 DNSSEC 部署
+
+BIND9：
+
+```bash
+./docker/docker_lab.sh deploy-realcase example.org
+```
+
+PowerDNS：
+
+```bash
+./docker/powerdns_docker_lab.sh deploy-realcase example.org
+```
+
+### 2. 现网 DNSSEC 错误 + 本地规约修复
+
+BIND9：
+
+```bash
+./docker/docker_lab.sh repair-realcase dnssec-failed.org
+```
+
+PowerDNS：
+
+```bash
+./docker/powerdns_docker_lab.sh repair-realcase dnssec-failed.org
+```
+
+### 3. 典型 DNSSEC 错误 demo
+
+BIND9：
+
+```bash
+./docker/docker_lab.sh demo bad-ds
+```
+
+PowerDNS：
+
+```bash
+./docker/powerdns_docker_lab.sh demo bad-ds
+```
+
+Docker 输出目录：
+
+```text
+work-docker/              # BIND9 容器运行状态
+work-powerdns-docker/     # PowerDNS 容器运行状态
+realcase-live-docker/     # Docker 运行导出的配置包
+```
+
 ## 输出文件
 
 真实案例输出位于 `realcase-live/<domain>/`。以 `dnssec-failed.org` 为例：

@@ -8,6 +8,8 @@ usage() {
 用法：
   ./docker/docker_lab.sh daemon
   ./docker/docker_lab.sh build
+  ./docker/docker_lab.sh deploy-realcase <domain>
+  ./docker/docker_lab.sh repair-realcase <domain>
   ./docker/docker_lab.sh build-scenario <scenario>
   ./docker/docker_lab.sh build-all-scenarios
   ./docker/docker_lab.sh demo <scenario>
@@ -68,6 +70,8 @@ usage() {
 示例：
   ./docker/docker_lab.sh daemon   # 仅在当前这类无 systemd 的开发机里需要
   ./docker/docker_lab.sh build
+  ./docker/docker_lab.sh deploy-realcase example.org
+  ./docker/docker_lab.sh repair-realcase dnssec-failed.org
   ./docker/docker_lab.sh build-all-scenarios
   ./docker/docker_lab.sh run-scenario bad-ds
 EOF
@@ -183,7 +187,7 @@ require_scenario() {
 }
 
 build_base_image() {
-  docker_cmd build -f docker/Dockerfile -t dnssec-local-lab:latest ..
+  docker_cmd build -f docker/Dockerfile -t dnssec-local-lab:latest .
 }
 
 build_scenario_image() {
@@ -210,6 +214,17 @@ run_scenario_image() {
     "$(scenario_image "$scenario")"
 }
 
+run_bind_container() {
+  mkdir -p work-docker realcase-live-docker
+  docker_cmd run --rm \
+    --cap-add NET_ADMIN \
+    -v "$PWD/work-docker:/app/dnssec-local-lab/work" \
+    -v "$PWD/realcase-live-docker:/app/dnssec-local-lab/realcase-live" \
+    -w /app/dnssec-local-lab \
+    --entrypoint python3 \
+    dnssec-local-lab:latest "$@"
+}
+
 cmd="${1:-}"
 case "$cmd" in
   daemon)
@@ -233,6 +248,22 @@ case "$cmd" in
   build)
     build_base_image
     ;;
+  deploy-realcase)
+    domain="${2:-}"
+    if [[ -z "$domain" ]]; then
+      echo "缺少 domain，例如：./docker/docker_lab.sh deploy-realcase example.org" >&2
+      exit 1
+    fi
+    run_bind_container dnssec_repair_engine.py deploy-realcase --backend bind9 --domain "$domain"
+    ;;
+  repair-realcase)
+    domain="${2:-}"
+    if [[ -z "$domain" ]]; then
+      echo "缺少 domain，例如：./docker/docker_lab.sh repair-realcase dnssec-failed.org" >&2
+      exit 1
+    fi
+    run_bind_container dnssec_lab.py repair-realcase --backend bind9 --domain "$domain"
+    ;;
   build-scenario)
     scenario="${2:-}"
     build_scenario_image "$scenario"
@@ -247,10 +278,11 @@ case "$cmd" in
   demo)
     scenario="${2:-}"
     require_scenario "$scenario"
-    mkdir -p work-docker
+    mkdir -p work-docker realcase-live-docker
     docker_cmd run --rm \
       --cap-add NET_ADMIN \
       -v "$PWD/work-docker:/app/dnssec-local-lab/work" \
+      -v "$PWD/realcase-live-docker:/app/dnssec-local-lab/realcase-live" \
       -w /app/dnssec-local-lab \
       dnssec-local-lab:latest demo "$scenario"
     ;;
@@ -265,10 +297,11 @@ case "$cmd" in
     done
     ;;
   shell)
-    mkdir -p work-docker
+    mkdir -p work-docker realcase-live-docker
     docker_cmd run --rm -it \
       --cap-add NET_ADMIN \
       -v "$PWD/work-docker:/app/dnssec-local-lab/work" \
+      -v "$PWD/realcase-live-docker:/app/dnssec-local-lab/realcase-live" \
       -w /app/dnssec-local-lab \
       --entrypoint bash \
       dnssec-local-lab:latest -l
@@ -278,7 +311,7 @@ case "$cmd" in
     for scenario in "${SCENARIOS[@]}"; do
       docker_cmd rm -f "$(scenario_container "$scenario")" 2>/dev/null || true
     done
-    rm -rf work-docker
+    rm -rf work-docker realcase-live-docker
     ;;
   ""|-h|--help|help)
     usage

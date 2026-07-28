@@ -4,7 +4,10 @@ __pycache__/
 
 # Runtime-generated lab state.
 work/
+work-docker/
+work-powerdns-docker/
 realcase-live/
+realcase-live-docker/
 
 # Optional local DNSViz source override.
 dnsviz/

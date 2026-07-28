@@ -1,12 +1,26 @@
 services:
   dnssec-lab:
     build:
-      context: ../..
-      dockerfile: dnssec-local-lab/docker/Dockerfile
+      context: ..
+      dockerfile: docker/Dockerfile
     image: dnssec-local-lab:latest
     container_name: dnssec-local-lab
     cap_add:
       - NET_ADMIN
     volumes:
       - ../work-docker:/app/dnssec-local-lab/work
+      - ../realcase-live-docker:/app/dnssec-local-lab/realcase-live
+    working_dir: /app/dnssec-local-lab
+
+  dnssec-powerdns-lab:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.powerdns
+    image: dnssec-powerdns-lab:latest
+    container_name: dnssec-powerdns-lab
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ../work-powerdns-docker:/app/dnssec-local-lab/work
+      - ../realcase-live-docker:/app/dnssec-local-lab/realcase-live
     working_dir: /app/dnssec-local-lab
