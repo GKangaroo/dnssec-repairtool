@@ -14,6 +14,48 @@
 
 其中，现网未部署 DNSSEC 的域名可以直接走第 1 条工作流：工具会读取现网解析链和业务记录，在本地生成带 DNSSEC 的 BIND9/PowerDNS 配置包。从修复视角看，这也可以理解为把“DNSSEC 缺失”规约为本地部署修复。
 
+## 大模型与项目级 Skill
+
+仓库内置了供大模型读取的项目级 Skill：
+
+```text
+.trae/skills/dnssec-deploy-repair/
+├── SKILL.md
+└── references/
+    ├── workflows.md
+    └── error-codes.md
+```
+
+在支持项目级 Skill 的大模型客户端中打开本仓库后，可以要求大模型使用
+`dnssec-deploy-repair` Skill 完成以下工作：
+
+- 克隆或定位仓库，检查并安装运行依赖。
+- 根据目标环境选择本机或 Docker，以及 BIND9 或 PowerDNS 后端。
+- 调用现网诊断、一键部署、一键修复和典型错误 demo 命令。
+- 解释 77 种 DNSViz DNSSEC 错误码、修复族、拓扑优先级和所需权限。
+- 汇总修复前后结果、配置包位置、剩余错误和需要人工执行的外部操作。
+
+可以直接向大模型提出类似请求：
+
+```text
+使用 dnssec-deploy-repair Skill，检查环境并在本地 BIND9 中为 example.org 部署 DNSSEC。
+
+使用 dnssec-deploy-repair Skill，分析 capture.grok.json，
+按拓扑优先级生成 PowerDNS 修复计划；执行前先列出所需权限。
+
+使用 dnssec-deploy-repair Skill，在 Docker PowerDNS 环境中运行现网案例修复，
+最后报告修复前后错误码和配置包路径。
+```
+
+大模型不是 DNSSEC 修复决策主体。错误码映射、依赖症状消解、拓扑优先级、
+修复计划和 BIND9/PowerDNS 后端操作均由本项目的确定性规则和适配器实现。
+大模型主要负责安装与调用工具、补全参数、协调工具之外的父区或注册商权限，
+以及解释和汇总结果。没有大模型时，所有 CLI 和 Docker 工作流仍可独立运行。
+
+Skill 覆盖 77 种 DNSSEC 相关错误码的知识与处置方法，但不表示 77 种错误都能
+在当前两个后端中自动执行。涉及公网权威服务、注册商或父区 DS 的变更默认只
+生成计划和配置包，必须在获得相应权限并经人工确认后执行。
+
 ## 运行环境
 
 推荐系统：Debian 12 / Ubuntu 22.04+。本工具会启动本地 53 端口服务并配置 loopback IP，建议在开发机、虚拟机或容器中运行。`demo`、`realcase-demo`、`repair-realcase` 会在运行结束后自动清理本地 DNS 服务。

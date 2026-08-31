@@ -14,6 +14,58 @@ The local environment preserves source-shaped domain names. For example, `dnssec
 
 For a public domain that has not deployed DNSSEC, use the first workflow directly: the tool reads the existing public resolution chain and service records, then generates a local DNSSEC-enabled BIND9/PowerDNS configuration bundle. From a repair perspective, this can also be treated as locally repairing a missing DNSSEC deployment.
 
+## LLM Integration and Project Skill
+
+The repository includes a project-level Skill for LLM clients:
+
+```text
+.trae/skills/dnssec-deploy-repair/
+├── SKILL.md
+└── references/
+    ├── workflows.md
+    └── error-codes.md
+```
+
+When this repository is opened in an LLM client that supports project-level
+Skills, ask the model to use the `dnssec-deploy-repair` Skill to:
+
+- clone or locate the repository and verify or install its dependencies;
+- select native or Docker execution and the BIND9 or PowerDNS backend;
+- invoke public diagnosis, one-command deployment, one-command repair, and
+  typical error demos;
+- explain 77 DNSViz DNSSEC error codes, repair families, topological
+  priorities, and required authority;
+- summarize before/after results, configuration bundle paths, residual
+  errors, and external actions that still require an operator.
+
+Example prompts:
+
+```text
+Use the dnssec-deploy-repair Skill to check the environment and deploy DNSSEC
+for example.org in the local BIND9 lab.
+
+Use the dnssec-deploy-repair Skill to analyze capture.grok.json and produce a
+topologically ordered PowerDNS repair plan. List required permissions before
+execution.
+
+Use the dnssec-deploy-repair Skill to repair a public case in the Docker
+PowerDNS lab, then report before/after error codes and the configuration bundle.
+```
+
+The LLM is not the DNSSEC repair decision engine. Error-code mapping,
+dependent-symptom elimination, topological priority, repair planning, and
+BIND9/PowerDNS mutations are implemented by deterministic project rules and
+backend adapters. The LLM primarily installs and invokes the tool, completes
+parameters, coordinates parent-zone or registrar authority outside the tool,
+and explains the results. All CLI and Docker workflows also run without an
+LLM.
+
+The Skill contains knowledge and procedures for 77 DNSSEC-specific error
+codes, but this does not mean that all 77 are automatically executable on both
+current backends. Changes to public authoritative services, registrars, or
+parent DS records are plan-and-export operations by default and require the
+corresponding authority and explicit operator approval.
+
 ## Runtime Environment
 
 Recommended system: Debian 12 / Ubuntu 22.04+. The tool starts local DNS services on port 53 and configures loopback IPs, so it is best used inside a devbox, VM, or container. `demo`, `realcase-demo`, and `repair-realcase` automatically clean up local DNS services when they finish.
