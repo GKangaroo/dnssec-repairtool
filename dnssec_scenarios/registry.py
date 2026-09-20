@@ -55,6 +55,7 @@ from .realcase_al_stale_ds_rollover import scenario as realcase_al_stale_ds_roll
 from .realcase_dnssec_failed_org import scenario as realcase_dnssec_failed_org
 from .realcase_sigfail_ippacket_stream import scenario as realcase_sigfail_ippacket_stream
 from .realcase_tamu_edu_expired_rrsig import scenario as realcase_tamu_edu_expired_rrsig
+from .realcase_ru_invalid_rrsig import scenario as realcase_ru_invalid_rrsig
 from .revoked_not_signing import scenario as revoked_not_signing
 from .rrset_ttl_mismatch import scenario as rrset_ttl_mismatch
 from .rrsig_bad_length_ecdsa256 import scenario as rrsig_bad_length_ecdsa256
@@ -131,6 +132,7 @@ SCENARIOS = {
         realcase_dnssec_failed_org,
         realcase_sigfail_ippacket_stream,
         realcase_tamu_edu_expired_rrsig,
+        realcase_ru_invalid_rrsig,
         revoked_not_signing,
         rrset_ttl_mismatch,
         rrsig_bad_length_ecdsa256,

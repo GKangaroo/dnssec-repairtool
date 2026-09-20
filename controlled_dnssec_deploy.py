@@ -56,7 +56,7 @@ def write_trust_anchors() -> None:
 
 def build_unsigned_child_with_signed_parent_chain() -> None:
     dnssec_lab.ensure_keys()
-    dnssec_lab.write_zone_files("good", include_example_ds=False)
+    dnssec_lab.write_zone_files("good", include_example_ds=False, include_child_signals=True)
     write_trust_anchors()
 
 
@@ -156,6 +156,12 @@ def write_unsigned_child_with_records(records: tuple[ImportedRecord, ...]) -> No
     child_ns = dnssec_lab.zone_ns("example")
     if not record_lines:
         record_lines = f'www.{child_zone} 300 IN A 192.0.2.10\n{child_zone} 300 IN TXT "dnssec lab example zone"'
+    child_signals = "\n".join(
+        (
+            dnssec_lab.cds_from_ksk("example"),
+            dnssec_lab.cdnskey_from_ksk("example"),
+        )
+    )
     dnssec_lab.LabContext().unsigned_zone_path("example").write_text(
         f"""$ORIGIN {child_zone}
 $TTL 300
@@ -164,6 +170,7 @@ $TTL 300
 @ IN NS {child_ns}
 ns IN A {dnssec_lab.AUTH["example"]["ip"]}
 {record_lines}
+{child_signals}
 """,
         encoding="ascii",
     )
@@ -228,7 +235,7 @@ def setup_unsigned_lab(backend: str) -> tuple[str, ...]:
     dnssec_lab.reset_workdir()
     build_unsigned_child_with_signed_parent_chain()
     return (
-        "initialize unsigned child zone with no parent DS",
+        "initialize unsigned child zone with no parent DS and publish child CDS/CDNSKEY signals",
         "generate local KSK/ZSK material for child, parent and root",
     )
 
@@ -306,7 +313,9 @@ def deploy_realcase(
     actions = list(setup_unsigned_lab(backend))
     imported = collect_public_business_records(domain, qnames)
     write_unsigned_child_with_records(imported)
-    actions.append(f"import {len(imported)} public business record(s) into unsigned local child zone")
+    actions.append(
+        f"import {len(imported)} public business record(s) and publish child CDS/CDNSKEY signals"
+    )
     ds = publish_child_ds_to_parent()
     actions.append("publish DS generated from child KSK into controlled parent zone")
     sign_deployed_chain()

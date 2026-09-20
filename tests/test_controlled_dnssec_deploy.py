@@ -80,6 +80,18 @@ class TestControlledDNSSECDeploy(unittest.TestCase):
             "www.example.com.",
         )
 
+    def test_unsigned_child_publishes_cds_and_cdnskey_signals(self):
+        dnssec_lab.reset_workdir()
+        dnssec_lab.ensure_keys()
+        deploy.write_unsigned_child_with_records(
+            (deploy.ImportedRecord("example.com.", 300, "A", "203.0.113.10", "source.example."),)
+        )
+
+        child_zone = dnssec_lab.LabContext().unsigned_zone_path("example")
+        text = child_zone.read_text(encoding="ascii")
+        self.assertIn(dnssec_lab.cds_from_ksk("example"), text)
+        self.assertIn(dnssec_lab.cdnskey_from_ksk("example"), text)
+
 
 if __name__ == "__main__":
     unittest.main()
