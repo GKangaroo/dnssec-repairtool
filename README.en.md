@@ -70,6 +70,8 @@ corresponding authority and explicit operator approval.
 
 Recommended system: Debian 12 / Ubuntu 22.04+. The tool starts local DNS services on port 53 and configures loopback IPs, so it is best used inside a devbox, VM, or container. `demo`, `realcase-demo`, and `repair-realcase` automatically clean up local DNS services when they finish.
 
+Python **3.10 or newer is required** (the code uses PEP 604 `X | None` type syntax; Debian 12 / Ubuntu 22.04+ ship Python 3.11, which works out of the box). The system Python 3.9 on CentOS Stream 9 / RHEL 9 cannot run this tool — use the Docker image described below, or install Python 3.10+ via pyenv/uv.
+
 Install system dependencies:
 
 ```bash

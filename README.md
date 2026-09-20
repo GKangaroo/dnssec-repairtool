@@ -60,6 +60,8 @@ Skill 覆盖 77 种 DNSSEC 相关错误码的知识与处置方法，但不表�
 
 推荐系统：Debian 12 / Ubuntu 22.04+。本工具会启动本地 53 端口服务并配置 loopback IP，建议在开发机、虚拟机或容器中运行。`demo`、`realcase-demo`、`repair-realcase` 会在运行结束后自动清理本地 DNS 服务。
 
+Python 版本要求 **3.10 或更高**（代码使用了 PEP 604 的 `X | None` 类型语法；Debian 12 / Ubuntu 22.04+ 自带 Python 3.11，可直接使用）。CentOS Stream 9 / RHEL 9 系统自带的 Python 3.9 无法运行，请使用下文的 Docker 镜像，或通过 pyenv、uv 等安装 Python 3.10+。
+
 安装系统依赖：
 
 ```bash
