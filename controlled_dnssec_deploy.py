@@ -259,6 +259,11 @@ def acquire_business_records(
             "recursive DNS cannot enumerate a complete zone; only explicitly queried names and RR types were imported",
         )
     if not records:
+        if allow_partial_records:
+            # Pure CNAME/empty domains may expose no business records over
+            # recursive DNS; the lab zone writer already has a placeholder
+            # fallback, so keep going for a lab-only demonstration.
+            return RecordImportResult(records=(), source=source, complete=complete, warnings=warnings)
         raise SystemExit(f"no business records were imported from {source}")
     return RecordImportResult(records=records, source=source, complete=complete, warnings=warnings)
 

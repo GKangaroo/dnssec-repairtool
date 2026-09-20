@@ -1977,7 +1977,7 @@ def dnsviz_env():
     ensure_local_dnsviz_config()
     sitecustomize = SHIM / "sitecustomize.py"
     sitecustomize.write_text(
-        """import sys, types\ntry:\n    import pygraphviz\n    m = types.ModuleType('pygraphviz.release')\n    m.version = getattr(pygraphviz, '__version__', '1.7')\n    sys.modules.setdefault('pygraphviz.release', m)\nexcept Exception:\n    pass\n""",
+        """import sys, types\nsys.path.insert(0, %r)\ntry:\n    import dnsviz_compat\n    dnsviz_compat.apply()\nexcept Exception:\n    pass\ntry:\n    import pygraphviz\n    m = types.ModuleType('pygraphviz.release')\n    m.version = getattr(pygraphviz, '__version__', '1.7')\n    sys.modules.setdefault('pygraphviz.release', m)\nexcept Exception:\n    pass\n""" % str(ROOT),
         encoding="ascii",
     )
     env = os.environ.copy()
