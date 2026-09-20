@@ -8,8 +8,8 @@ usage() {
 用法：
   ./docker/powerdns_docker_lab.sh daemon
   ./docker/powerdns_docker_lab.sh build
-  ./docker/powerdns_docker_lab.sh deploy-realcase <domain>
-  ./docker/powerdns_docker_lab.sh repair-realcase <domain>
+  ./docker/powerdns_docker_lab.sh deploy-realcase <domain> [options]
+  ./docker/powerdns_docker_lab.sh repair-realcase <domain> [options]
   ./docker/powerdns_docker_lab.sh build-scenario <scenario>
   ./docker/powerdns_docker_lab.sh build-all-scenarios
   ./docker/powerdns_docker_lab.sh demo <scenario>
@@ -24,8 +24,8 @@ usage() {
 
 示例：
   ./docker/powerdns_docker_lab.sh build
-  ./docker/powerdns_docker_lab.sh deploy-realcase example.org
-  ./docker/powerdns_docker_lab.sh repair-realcase dnssec-failed.org
+  ./docker/powerdns_docker_lab.sh deploy-realcase example.org --allow-partial-records
+  ./docker/powerdns_docker_lab.sh repair-realcase dnssec-failed.org --allow-partial-records
   ./docker/powerdns_docker_lab.sh build-scenario bad-ds
   ./docker/powerdns_docker_lab.sh run-scenario bad-ds
 EOF
@@ -159,7 +159,7 @@ case "$cmd" in
       echo "缺少 domain，例如：./docker/powerdns_docker_lab.sh deploy-realcase example.org" >&2
       exit 1
     fi
-    run_powerdns_container dnssec_repair_engine.py deploy-realcase --backend powerdns --domain "$domain"
+    run_powerdns_container dnssec_repair_engine.py deploy-realcase --backend powerdns --domain "$domain" "${@:3}"
     ;;
   repair-realcase)
     domain="${2:-}"
@@ -167,7 +167,7 @@ case "$cmd" in
       echo "缺少 domain，例如：./docker/powerdns_docker_lab.sh repair-realcase dnssec-failed.org" >&2
       exit 1
     fi
-    run_powerdns_container dnssec_lab.py repair-realcase --backend powerdns --domain "$domain"
+    run_powerdns_container dnssec_lab.py repair-realcase --backend powerdns --domain "$domain" "${@:3}"
     ;;
   build-scenario)
     build_scenario_image "${2:-}"

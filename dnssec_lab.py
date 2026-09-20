@@ -9,6 +9,7 @@ import socket
 import subprocess
 import sys
 import time
+from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta, timezone
 from threading import Thread
 from pathlib import Path
@@ -46,12 +47,26 @@ FUTURE_START = "20280101000000"
 FUTURE_SIG_END = "20290101000000"
 SCENARIOS = {"good", *ERROR_SCENARIOS}
 FIXABLE_SCENARIOS = sorted(SCENARIOS - {"good"})
-REALCASE_DOMAIN_SCENARIOS = {
-    "dnssec-failed.org.": "realcase-dnssec-failed-org",
-    "sigfail.ippacket.stream.": "realcase-sigfail-ippacket-stream",
-    "al.": "realcase-al-stale-ds-rollover",
-    "tamu.edu.": "realcase-tamu-edu-expired-rrsig",
-}
+
+
+@dataclass(frozen=True)
+class RealcaseRepairResult:
+    source_domain: str
+    backend: str
+    live_grok: str
+    observed_codes: tuple[str, ...]
+    repair_plan: dict
+    record_source: str
+    records_complete: bool
+    record_warnings: tuple[str, ...]
+    imported_record_count: int
+    actions: tuple[str, ...]
+    local_verify_grok: str | None
+    local_final_codes: tuple[str, ...]
+    local_converged: bool | None
+    verification_scope: str
+    public_changes_applied: bool
+    files: dict[str, str]
 
 
 def absolute_name(value: str) -> str:
@@ -2106,24 +2121,118 @@ def realcase_demo(
         log("stopped local DNS services")
 
 
-def scenario_for_realcase_domain(domain: str) -> str:
-    domain = domain if domain.endswith(".") else domain + "."
-    scenario = REALCASE_DOMAIN_SCENARIOS.get(domain.lower())
-    if scenario:
-        return scenario
-    known = ", ".join(sorted(item.rstrip(".") for item in REALCASE_DOMAIN_SCENARIOS))
-    raise SystemExit(f"no built-in realcase scenario for {domain.rstrip('.')}; known domains: {known}")
-
-
 def repair_realcase(
     *,
     domain: str,
     qname: str | None = None,
     backend: str = "bind9",
     out_dir: Path | None = None,
-) -> None:
-    scenario = scenario_for_realcase_domain(domain)
-    realcase_demo(scenario, domain=domain, qname=qname, backend=backend, out_dir=out_dir)
+    grok: Path | None = None,
+    zone_file: Path | None = None,
+    axfr_server: str | None = None,
+    axfr_port: int = 53,
+    allow_partial_records: bool = False,
+    rotate_keys: bool = False,
+    verify: bool = True,
+) -> RealcaseRepairResult:
+    import controlled_dnssec_deploy as deploy
+    import controlled_zone_repair
+    import dnsviz_grok_adapter
+    import dnssec_repair_engine as repair
+    import lab_config_exporter
+    import realcase_chain_importer
+
+    backend = repair.normalize_backend(backend)
+    domain = absolute_name(domain)
+    out_dir = out_dir or (ROOT / "realcase-live" / safe_label(domain))
+    out_dir.mkdir(parents=True, exist_ok=True)
+    if grok is None:
+        grok = dnsviz_live_domain(domain, qname=qname, out_dir=out_dir)
+    elif not grok.is_file():
+        raise SystemExit(f"DNSViz grok file does not exist: {grok}")
+
+    diagnosis = dnsviz_grok_adapter.diagnose_grok(grok, backend)
+    if absolute_name(diagnosis.zone).lower() != domain.lower():
+        raise SystemExit(
+            f"DNSViz capture describes zone {diagnosis.zone}, not requested domain {domain}; "
+            "use the diagnosed zone as --domain"
+        )
+
+    configure_lab_zones(domain, diagnosis.parent_zone or parent_zone_for(domain))
+    qnames = (qname,) if qname else None
+    record_import = deploy.acquire_business_records(
+        domain,
+        qnames=qnames,
+        zone_file=zone_file,
+        axfr_server=axfr_server,
+        axfr_port=axfr_port,
+        allow_partial_records=allow_partial_records,
+    )
+    imported = realcase_chain_importer.import_realcase(
+        grok,
+        backend=backend,
+        domain=domain,
+        out_dir=out_dir / "import",
+    )
+
+    actions = list(deploy.setup_unsigned_lab(backend))
+    deploy.write_unsigned_child_with_records(record_import.records)
+    actions.append(f"import {len(record_import.records)} business record(s) from {record_import.source}")
+    deploy.publish_child_ds_to_parent()
+    actions.append("publish locally generated child DS into the controlled parent")
+    deploy.sign_deployed_chain()
+    deploy.start_backend(backend)
+    actions.append(f"start controlled {backend} authority chain")
+
+    local_verify_grok = None
+    local_final_codes: tuple[str, ...] = ()
+    try:
+        repaired = controlled_zone_repair.repair_backend_from_grok(
+            backend,
+            grok,
+            rotate_keys=rotate_keys,
+        )
+        actions.extend(repaired.actions)
+        if verify:
+            verified_grok, local_final_codes = deploy.verify_deployment(
+                f"repair-realcase-{safe_label(domain)}"
+            )
+            local_verify_grok = str(verified_grok)
+            actions.append("verify the controlled local chain with DNSViz")
+
+        files = dict(imported.files)
+        files["import_summary"] = files.pop("summary")
+        files["local_verify_grok"] = local_verify_grok or ""
+        files["config_bundle"] = lab_config_exporter.export_config_bundle(
+            backend,
+            out_dir,
+            source_domain=domain,
+            purpose="apply a live DNSViz-derived repair plan to a controlled local clone",
+        )
+        summary = out_dir / "repair-realcase-summary.json"
+        files["summary"] = str(summary)
+        result = RealcaseRepairResult(
+            source_domain=domain,
+            backend=backend,
+            live_grok=str(grok),
+            observed_codes=diagnosis.error_codes,
+            repair_plan=repair.plan_as_dict(repair.build_plan(diagnosis.to_context())),
+            record_source=record_import.source,
+            records_complete=record_import.complete,
+            record_warnings=record_import.warnings,
+            imported_record_count=len(record_import.records),
+            actions=tuple(actions),
+            local_verify_grok=local_verify_grok,
+            local_final_codes=local_final_codes,
+            local_converged=not local_final_codes if verify else None,
+            verification_scope="local-controlled",
+            public_changes_applied=False,
+            files=files,
+        )
+        summary.write_text(json.dumps(asdict(result), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        return result
+    finally:
+        deploy.stop_backend(backend)
 
 
 def main() -> None:
@@ -2149,10 +2258,18 @@ def main() -> None:
     p.add_argument("--backend", choices=["bind9", "powerdns"], default="bind9", help="backend label for generated repair plan")
     p.add_argument("--out-dir", type=Path, default=None, help="directory for live probe/grok and imported record package")
     p = sub.add_parser("repair-realcase")
-    p.add_argument("--domain", required=True, help="real domain to capture and map to a built-in normalized repair scenario")
+    p.add_argument("--domain", required=True, help="real domain to capture and reproduce in the controlled lab")
     p.add_argument("--qname", default=None, help="specific real qname to probe; defaults to --domain")
     p.add_argument("--backend", choices=["bind9", "powerdns"], default="bind9", help="backend label for generated repair plan")
     p.add_argument("--out-dir", type=Path, default=None, help="directory for live probe/grok and imported record package")
+    p.add_argument("--grok", type=Path, default=None, help="existing DNSViz grok JSON; skips live capture")
+    p.add_argument("--zone-file", type=Path, default=None, help="authoritative zone export used as the complete record source")
+    p.add_argument("--axfr-server", default=None, help="authoritative server that permits AXFR")
+    p.add_argument("--axfr-port", type=int, default=53)
+    p.add_argument("--allow-partial-records", action="store_true", help="allow an incomplete recursive-DNS sample for lab-only use")
+    p.add_argument("--rotate-keys", action="store_true")
+    p.add_argument("--no-verify", action="store_true")
+    p.add_argument("--out", type=Path, default=None)
     sub.add_parser("dsync-demo")
     args = parser.parse_args()
 
@@ -2175,7 +2292,26 @@ def main() -> None:
     elif args.cmd == "realcase-demo":
         realcase_demo(args.scenario, domain=args.domain, qname=args.qname, backend=args.backend, out_dir=args.out_dir)
     elif args.cmd == "repair-realcase":
-        repair_realcase(domain=args.domain, qname=args.qname, backend=args.backend, out_dir=args.out_dir)
+        result = repair_realcase(
+            domain=args.domain,
+            qname=args.qname,
+            backend=args.backend,
+            out_dir=args.out_dir,
+            grok=args.grok,
+            zone_file=args.zone_file,
+            axfr_server=args.axfr_server,
+            axfr_port=args.axfr_port,
+            allow_partial_records=args.allow_partial_records,
+            rotate_keys=args.rotate_keys,
+            verify=not args.no_verify,
+        )
+        text = json.dumps(asdict(result), ensure_ascii=False, indent=2)
+        if args.out:
+            args.out.parent.mkdir(parents=True, exist_ok=True)
+            args.out.write_text(text + "\n", encoding="utf-8")
+        print(text)
+        if result.local_converged is False:
+            raise SystemExit(1)
     elif args.cmd == "dsync-demo":
         dsync_demo()
 

@@ -96,14 +96,17 @@ The system dependency list above already installs `dnsviz`; normal usage does no
 
 ### 1. Public resolution chain + local DNSSEC deployment
 
-Use this for public domains that have not deployed DNSSEC yet. The tool fetches existing DNS records and locally generates DNSSEC keys, DS records, signed zones, and backend configuration.
+Use this for public domains that have not deployed DNSSEC yet. The tool first captures the live DNSViz state, then imports complete business records from an authoritative zone file or AXFR and locally generates DNSSEC keys, DS records, signed zones, and backend configuration.
+
+Recursive DNS cannot enumerate a complete zone. To avoid producing a bundle that silently drops business records, the command requires `--zone-file` or `--axfr-server` by default. Use `--allow-partial-records` only for an explicitly incomplete lab demo.
 
 BIND9:
 
 ```bash
 python3 dnssec_repair_engine.py deploy-realcase \
   --backend bind9 \
-  --domain example.org
+  --domain example.org \
+  --zone-file /path/to/db.example.org
 ```
 
 PowerDNS:
@@ -111,7 +114,17 @@ PowerDNS:
 ```bash
 python3 dnssec_repair_engine.py deploy-realcase \
   --backend powerdns \
-  --domain example.org
+  --domain example.org \
+  --axfr-server 192.0.2.53
+```
+
+For a lab-only recursive-DNS sample:
+
+```bash
+python3 dnssec_repair_engine.py deploy-realcase \
+  --backend bind9 \
+  --domain example.org \
+  --allow-partial-records
 ```
 
 The JSON output includes `config_bundle`. Example output directories:
@@ -121,38 +134,48 @@ realcase-live/example.org/deploy/bind9-config/
 realcase-live/example.org/deploy/powerdns-config/
 ```
 
-### 2. Public DNSSEC error + local normalized repair
+### 2. Arbitrary public DNSSEC error + local normalized repair
+
+`repair-realcase` no longer chooses a canned scenario from the domain name. It builds the repair plan directly from a live DNSViz grok result, or from an offline capture supplied with `--grok`, and applies that plan to a controlled local copy that preserves the imported business records.
 
 BIND9:
 
 ```bash
 python3 dnssec_lab.py repair-realcase \
-  --domain dnssec-failed.org
+  --domain broken.example.org \
+  --zone-file /path/to/db.broken.example.org
 ```
 
 PowerDNS:
 
 ```bash
 python3 dnssec_lab.py repair-realcase \
-  --domain dnssec-failed.org \
-  --backend powerdns
+  --domain broken.example.org \
+  --backend powerdns \
+  --axfr-server 192.0.2.53
+```
+
+Without public network access, provide an existing grok capture:
+
+```bash
+python3 dnssec_lab.py repair-realcase \
+  --domain broken.example.org \
+  --backend bind9 \
+  --grok capture.grok.json \
+  --zone-file /path/to/db.broken.example.org
 ```
 
 Example output directories:
 
 ```text
-realcase-live/dnssec-failed.org/bind9-config/
-realcase-live/dnssec-failed.org/powerdns-config/
+realcase-live/broken.example.org/bind9-config/
+realcase-live/broken.example.org/powerdns-config/
 ```
 
-Built-in real-world case mapping:
-
-```text
-dnssec-failed.org        -> realcase-dnssec-failed-org
-sigfail.ippacket.stream -> realcase-sigfail-ippacket-stream
-al                       -> realcase-al-stale-ds-rollover
-tamu.edu                 -> realcase-tamu-edu-expired-rrsig
-```
+`observed_codes` comes from the public or supplied grok capture.
+`local_final_codes` and `local_converged` describe only the repaired controlled
+chain. `public_changes_applied` is always `false`; this tool does not
+automatically modify public authoritative services or registrars.
 
 Multi-level domains keep their original shape. Example:
 
@@ -203,13 +226,13 @@ Build images:
 BIND9:
 
 ```bash
-./docker/docker_lab.sh deploy-realcase example.org
+./docker/docker_lab.sh deploy-realcase example.org --allow-partial-records
 ```
 
 PowerDNS:
 
 ```bash
-./docker/powerdns_docker_lab.sh deploy-realcase example.org
+./docker/powerdns_docker_lab.sh deploy-realcase example.org --allow-partial-records
 ```
 
 ### 2. Public DNSSEC error + local normalized repair
@@ -217,13 +240,13 @@ PowerDNS:
 BIND9:
 
 ```bash
-./docker/docker_lab.sh repair-realcase dnssec-failed.org
+./docker/docker_lab.sh repair-realcase dnssec-failed.org --allow-partial-records
 ```
 
 PowerDNS:
 
 ```bash
-./docker/powerdns_docker_lab.sh repair-realcase dnssec-failed.org
+./docker/powerdns_docker_lab.sh repair-realcase dnssec-failed.org --allow-partial-records
 ```
 
 ### 3. Typical DNSSEC error demos

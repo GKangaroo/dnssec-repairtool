@@ -86,14 +86,17 @@ python3 -m pip install --break-system-packages \
 
 ### 1. 现网解析链记录 + 本地 DNSSEC 部署
 
-适用于现网尚未部署 DNSSEC 的域名：工具会抓取现有解析记录，在本地生成 DNSSEC key、DS、签名 zone 和对应后端配置。
+适用于现网尚未部署 DNSSEC 的域名：工具先采集 DNSViz 现网状态，再从权威 zone 文件或 AXFR 导入完整业务记录，在本地生成 DNSSEC key、DS、签名 zone 和对应后端配置。
+
+普通递归 DNS 查询无法枚举整个 zone。为了防止生成会丢失业务记录的配置包，默认要求使用 `--zone-file` 或 `--axfr-server`。只有明确进行不完整的实验演示时，才使用 `--allow-partial-records`。
 
 BIND9：
 
 ```bash
 python3 dnssec_repair_engine.py deploy-realcase \
   --backend bind9 \
-  --domain example.org
+  --domain example.org \
+  --zone-file /path/to/db.example.org
 ```
 
 PowerDNS：
@@ -101,7 +104,17 @@ PowerDNS：
 ```bash
 python3 dnssec_repair_engine.py deploy-realcase \
   --backend powerdns \
-  --domain example.org
+  --domain example.org \
+  --axfr-server 192.0.2.53
+```
+
+仅用于本地演示的递归 DNS 抽样模式：
+
+```bash
+python3 dnssec_repair_engine.py deploy-realcase \
+  --backend bind9 \
+  --domain example.org \
+  --allow-partial-records
 ```
 
 输出中会包含 `config_bundle`，配置包目录形如：
@@ -111,38 +124,47 @@ realcase-live/example.org/deploy/bind9-config/
 realcase-live/example.org/deploy/powerdns-config/
 ```
 
-### 2. 现网 DNSSEC 错误 + 本地规约修复
+### 2. 任意现网 DNSSEC 错误 + 本地规约修复
+
+`repair-realcase` 不再按域名选择预制 scenario。它直接使用目标域名的实时 DNSViz grok，或使用 `--grok` 指定的离线采集结果生成修复计划，并将计划应用到保留业务记录的本地受控副本。
 
 BIND9：
 
 ```bash
 python3 dnssec_lab.py repair-realcase \
-  --domain dnssec-failed.org
+  --domain broken.example.org \
+  --zone-file /path/to/db.broken.example.org
 ```
 
 PowerDNS：
 
 ```bash
 python3 dnssec_lab.py repair-realcase \
-  --domain dnssec-failed.org \
-  --backend powerdns
+  --domain broken.example.org \
+  --backend powerdns \
+  --axfr-server 192.0.2.53
+```
+
+无公网访问时，可以提供已经采集的 grok：
+
+```bash
+python3 dnssec_lab.py repair-realcase \
+  --domain broken.example.org \
+  --backend bind9 \
+  --grok capture.grok.json \
+  --zone-file /path/to/db.broken.example.org
 ```
 
 输出目录形如：
 
 ```text
-realcase-live/dnssec-failed.org/bind9-config/
-realcase-live/dnssec-failed.org/powerdns-config/
+realcase-live/broken.example.org/bind9-config/
+realcase-live/broken.example.org/powerdns-config/
 ```
 
-当前内置真实案例映射：
-
-```text
-dnssec-failed.org        -> realcase-dnssec-failed-org
-sigfail.ippacket.stream -> realcase-sigfail-ippacket-stream
-al                       -> realcase-al-stale-ds-rollover
-tamu.edu                 -> realcase-tamu-edu-expired-rrsig
-```
+结果中的 `observed_codes` 来自公网或指定的 grok，`local_final_codes` 和
+`local_converged` 只描述本地受控链的修复后验证。`public_changes_applied`
+始终为 `false`；工具不会自动写入公网权威服务或注册商。
 
 多层级域名也会保留原始层级。例如：
 
@@ -193,13 +215,13 @@ Docker 版本同样覆盖三条核心工作流：现网部署、现网错误修�
 BIND9：
 
 ```bash
-./docker/docker_lab.sh deploy-realcase example.org
+./docker/docker_lab.sh deploy-realcase example.org --allow-partial-records
 ```
 
 PowerDNS：
 
 ```bash
-./docker/powerdns_docker_lab.sh deploy-realcase example.org
+./docker/powerdns_docker_lab.sh deploy-realcase example.org --allow-partial-records
 ```
 
 ### 2. 现网 DNSSEC 错误 + 本地规约修复
@@ -207,13 +229,13 @@ PowerDNS：
 BIND9：
 
 ```bash
-./docker/docker_lab.sh repair-realcase dnssec-failed.org
+./docker/docker_lab.sh repair-realcase dnssec-failed.org --allow-partial-records
 ```
 
 PowerDNS：
 
 ```bash
-./docker/powerdns_docker_lab.sh repair-realcase dnssec-failed.org
+./docker/powerdns_docker_lab.sh repair-realcase dnssec-failed.org --allow-partial-records
 ```
 
 ### 3. 典型 DNSSEC 错误 demo

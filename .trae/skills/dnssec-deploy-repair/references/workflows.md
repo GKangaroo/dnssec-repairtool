@@ -153,16 +153,21 @@ Success requires `"converged": true` and `"final_codes": []`.
 
 ## Deploy DNSSEC For A Public Domain In The Local Lab
 
-This imports ordinary public records, generates fresh local keys and DS,
-constructs the local parent/child chain, starts the backend, verifies it, and
-exports a configuration bundle. It does not publish DS at the real registrar.
+This captures the public DNSViz state, imports ordinary records from an
+authoritative zone export or AXFR, generates fresh local keys and DS, constructs
+the local parent/child chain, starts the backend, verifies it, and exports a
+configuration bundle. It does not publish DS at the real registrar.
+
+Recursive DNS is not a complete zone-enumeration mechanism. Use
+`--allow-partial-records` only for an explicitly incomplete lab demo.
 
 BIND9:
 
 ```bash
 python3 dnssec_repair_engine.py deploy-realcase \
   --backend bind9 \
-  --domain example.org
+  --domain example.org \
+  --zone-file /path/to/db.example.org
 ```
 
 PowerDNS:
@@ -170,14 +175,15 @@ PowerDNS:
 ```bash
 python3 dnssec_repair_engine.py deploy-realcase \
   --backend powerdns \
-  --domain example.org
+  --domain example.org \
+  --axfr-server 192.0.2.53
 ```
 
 Docker equivalents:
 
 ```bash
-./docker/docker_lab.sh deploy-realcase example.org
-./docker/powerdns_docker_lab.sh deploy-realcase example.org
+./docker/docker_lab.sh deploy-realcase example.org --allow-partial-records
+./docker/powerdns_docker_lab.sh deploy-realcase example.org --allow-partial-records
 ```
 
 Expected bundles:
@@ -189,26 +195,32 @@ realcase-live/<domain>/deploy/powerdns-config/
 
 ## Repair A Public DNSSEC Case In The Local Lab
 
-The command captures the public case and repairs a local reproduction:
+The command captures an arbitrary public case, builds its plan directly from
+the DNSViz grok result, and applies that plan to a local controlled copy:
 
 ```bash
 python3 dnssec_lab.py repair-realcase \
   --domain example.org \
-  --backend bind9
+  --backend bind9 \
+  --zone-file /path/to/db.example.org
 
 python3 dnssec_lab.py repair-realcase \
   --domain example.org \
-  --backend powerdns
+  --backend powerdns \
+  --axfr-server 192.0.2.53
 ```
 
 Docker equivalents:
 
 ```bash
-./docker/docker_lab.sh repair-realcase example.org
-./docker/powerdns_docker_lab.sh repair-realcase example.org
+./docker/docker_lab.sh repair-realcase example.org --allow-partial-records
+./docker/powerdns_docker_lab.sh repair-realcase example.org --allow-partial-records
 ```
 
-Do not describe these commands as modifying the public domain.
+Use `--grok capture.grok.json` to operate from an existing capture without live
+network access. Do not describe these commands as modifying the public domain.
+`local_converged` is only the controlled-chain verification result, and
+`public_changes_applied` remains false.
 
 ## Run Error Demos
 

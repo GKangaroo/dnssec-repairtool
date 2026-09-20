@@ -8,8 +8,8 @@ usage() {
 用法：
   ./docker/docker_lab.sh daemon
   ./docker/docker_lab.sh build
-  ./docker/docker_lab.sh deploy-realcase <domain>
-  ./docker/docker_lab.sh repair-realcase <domain>
+  ./docker/docker_lab.sh deploy-realcase <domain> [options]
+  ./docker/docker_lab.sh repair-realcase <domain> [options]
   ./docker/docker_lab.sh build-scenario <scenario>
   ./docker/docker_lab.sh build-all-scenarios
   ./docker/docker_lab.sh demo <scenario>
@@ -70,8 +70,8 @@ usage() {
 示例：
   ./docker/docker_lab.sh daemon   # 仅在当前这类无 systemd 的开发机里需要
   ./docker/docker_lab.sh build
-  ./docker/docker_lab.sh deploy-realcase example.org
-  ./docker/docker_lab.sh repair-realcase dnssec-failed.org
+  ./docker/docker_lab.sh deploy-realcase example.org --allow-partial-records
+  ./docker/docker_lab.sh repair-realcase dnssec-failed.org --allow-partial-records
   ./docker/docker_lab.sh build-all-scenarios
   ./docker/docker_lab.sh run-scenario bad-ds
 EOF
@@ -254,7 +254,7 @@ case "$cmd" in
       echo "缺少 domain，例如：./docker/docker_lab.sh deploy-realcase example.org" >&2
       exit 1
     fi
-    run_bind_container dnssec_repair_engine.py deploy-realcase --backend bind9 --domain "$domain"
+    run_bind_container dnssec_repair_engine.py deploy-realcase --backend bind9 --domain "$domain" "${@:3}"
     ;;
   repair-realcase)
     domain="${2:-}"
@@ -262,7 +262,7 @@ case "$cmd" in
       echo "缺少 domain，例如：./docker/docker_lab.sh repair-realcase dnssec-failed.org" >&2
       exit 1
     fi
-    run_bind_container dnssec_lab.py repair-realcase --backend bind9 --domain "$domain"
+    run_bind_container dnssec_lab.py repair-realcase --backend bind9 --domain "$domain" "${@:3}"
     ;;
   build-scenario)
     scenario="${2:-}"

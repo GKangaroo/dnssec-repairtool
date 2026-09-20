@@ -394,6 +394,11 @@ def main() -> None:
     p.add_argument("--backend", choices=sorted(BACKENDS), required=True)
     p.add_argument("--domain", required=True)
     p.add_argument("--qname", action="append", default=None)
+    p.add_argument("--live-grok", type=Path, default=None, help="existing DNSViz grok JSON; skips live capture")
+    p.add_argument("--zone-file", type=Path, default=None, help="authoritative zone export used as the complete record source")
+    p.add_argument("--axfr-server", default=None, help="authoritative server that permits AXFR")
+    p.add_argument("--axfr-port", type=int, default=53)
+    p.add_argument("--allow-partial-records", action="store_true", help="allow an incomplete recursive-DNS sample for lab-only use")
     p.add_argument("--prefix", default=None)
     p.add_argument("--out-dir", type=Path, default=None)
     p.add_argument("--no-verify", action="store_true")
@@ -490,13 +495,18 @@ def main() -> None:
             prefix=args.prefix,
             out_dir=args.out_dir,
             verify=not args.no_verify,
+            live_grok=args.live_grok,
+            zone_file=args.zone_file,
+            axfr_server=args.axfr_server,
+            axfr_port=args.axfr_port,
+            allow_partial_records=args.allow_partial_records,
         )
         text = json.dumps(asdict(result), ensure_ascii=False, indent=2)
         if args.out:
             args.out.parent.mkdir(parents=True, exist_ok=True)
             args.out.write_text(text + "\n", encoding="utf-8")
         print(text)
-        if not result.deploy.converged:
+        if result.deploy.converged is False:
             raise SystemExit(1)
         return
     else:
