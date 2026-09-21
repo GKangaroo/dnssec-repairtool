@@ -268,7 +268,31 @@ def acquire_business_records(
     return RecordImportResult(records=records, source=source, complete=complete, warnings=warnings)
 
 
+def _drop_cname_conflicts(records: tuple[ImportedRecord, ...], apex: str) -> tuple[ImportedRecord, ...]:
+    """RFC 1034: a name may have a CNAME or other data, not both.
+
+    Public captures sometimes contain CNAME plus A/TXT/MX at the same owner
+    (non-authoritative views may expose both). BIND/pdns signers reject such
+    zones, so keep only the CNAME for non-apex names and drop apex CNAMEs.
+    """
+    apex = _absolute_name(apex).lower()
+    by_owner: dict[str, list[ImportedRecord]] = {}
+    for record in records:
+        by_owner.setdefault(record.owner.lower(), []).append(record)
+    out: list[ImportedRecord] = []
+    for owner, rrs in by_owner.items():
+        cnames = [record for record in rrs if record.rrtype == "CNAME"]
+        if owner == apex:
+            out.extend(record for record in rrs if record.rrtype != "CNAME")
+        elif cnames:
+            out.extend(cnames)
+        else:
+            out.extend(rrs)
+    return tuple(out)
+
+
 def write_unsigned_child_with_records(records: tuple[ImportedRecord, ...]) -> None:
+    records = _drop_cname_conflicts(records, dnssec_lab.AUTH["example"]["zone"])
     record_lines = "\n".join(record.to_zone_line() for record in records)
     child_zone = dnssec_lab.AUTH["example"]["zone"]
     child_ns = dnssec_lab.zone_ns("example")
