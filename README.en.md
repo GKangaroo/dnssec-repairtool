@@ -153,7 +153,7 @@ python3 dnssec_repair_engine.py deploy-realcase \
   2. set `listen-on any` in `named.conf` (PowerDNS: `local-address=0.0.0.0`);
   3. relativize container-absolute paths so the whole bundle is portable — run `named -c named-conf/<zone>.conf` from the bundle root.
 
-After deployment the child publishes CDS/CDNSKEY; the registry CDS scanner (e.g. Verisign's fuyu, typically 24–48 hours) automatically syncs the DS into the parent — **no manual DS entry at the registrar is needed**. Verify with `dig +dnssec example.org A` (RRSIG present) and `delv example.org A` (fully validated).
+After deployment the child publishes CDS/CDNSKEY; the parent zone scans and syncs the CDS (typically 24–48 hours) and automatically writes the DS — **no manual DS entry at the registrar is needed**. Verify with `dig +dnssec example.org A` (RRSIG present) and `delv example.org A` (fully validated).
 
 Note: the bundle does not include key material (KSK/ZSK). Carry the lab's `keys/` directory along when deploying, or regenerate keys on the target host and re-run the export.
 

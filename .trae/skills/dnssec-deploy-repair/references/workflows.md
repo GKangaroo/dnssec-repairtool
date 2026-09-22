@@ -211,8 +211,8 @@ resolution goes LAME. With `--public-ip` the export rewrites the child NS glue
 A records to that IP, re-signs the zone with the same keys (DS/CDS/CDNSKEY are
 unaffected), sets `listen-on any` (PowerDNS: `local-address=0.0.0.0`), and
 relativizes paths so the bundle is portable (`named -c named-conf/<zone>.conf`
-from the bundle root). The child then publishes CDS/CDNSKEY and the registry
-CDS scanner (e.g. fuyu) syncs the DS into the parent automatically; no manual
+from the bundle root). The child then publishes CDS/CDNSKEY and the parent zone
+scans and syncs the CDS automatically; no manual
 registrar DS entry is needed. The bundle does not include key material — carry
 the lab `keys/` directory or regenerate keys on the target host.
 

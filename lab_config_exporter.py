@@ -289,7 +289,7 @@ def export_config_bundle(
             "    mkdir -p run && named -c named-conf/<zone>.conf",
             "- Deploy: load zones/<domain>/<file>.signed plus the key material, run the backend on port 53,",
             "  make sure the parent-side delegation (NS + glue) matches these NS names, then wait for",
-            "  the registry CDS scanner (e.g. fuyu) to publish the child DS from the CDS/CDNSKEY records.",
+            "  the parent zone to publish the child DS from the CDS/CDNSKEY records.",
             "",
         ]
     else:

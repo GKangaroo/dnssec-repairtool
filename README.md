@@ -143,7 +143,7 @@ python3 dnssec_repair_engine.py deploy-realcase \
   2. 把 `named.conf` 的 `listen-on` 改为 `any`（PowerDNS 为 `local-address=0.0.0.0`）；
   3. 把配置里的容器绝对路径相对化，整个 bundle 可拷贝到任意主机，从包根目录直接 `named -c named-conf/<zone>.conf` 启动。
 
-部署后子区会发布 CDS/CDNSKEY，等待注册局 CDS 扫描服务（如 Verisign 的 fuyu，通常 24–48 小时）自动把 DS 同步进父区，**无需在注册商手动填 DS**。验证：`dig +dnssec example.org A` 应答带 RRSIG，`delv example.org A` 报 fully validated。
+部署后子区会发布 CDS/CDNSKEY，父域扫描并同步 CDS（通常 24–48 小时）后会自动把 DS 写入父域，**无需在注册商手动填 DS**。验证：`dig +dnssec example.org A` 应答带 RRSIG，`delv example.org A` 报 fully validated。
 
 注意：配置包不含密钥文件（KSK/ZSK 私钥），上线时需一并带走 lab 的 `keys/` 目录，或改在目标机上用 `dnssec-keygen` 重新生成并重新走一遍导出。
 
