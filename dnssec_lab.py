@@ -83,12 +83,15 @@ def parent_zone_for(zone: str) -> str:
     return ".".join(labels[1:]) + "."
 
 
-def configure_lab_zones(child_zone: str, parent_zone: str | None = None) -> None:
+def configure_lab_zones(child_zone: str, parent_zone: str | None = None, ns_names: tuple[str, ...] | None = None) -> None:
     """Configure the three-node lab to use real-looking child/parent names.
 
     The lab still runs three local authorities: root, parent, and child. The
     zone names, however, can be source-shaped, e.g. child=foo.bar.example.org.
     and parent=bar.example.org.
+
+    ns_names optionally sets the child zone's NS labels (e.g. ("ns1", "ns2"))
+    so exported zones match the parent-side delegation and glue.
     """
     child_zone = absolute_name(child_zone)
     parent_zone = absolute_name(parent_zone) if parent_zone else parent_zone_for(child_zone)
@@ -96,14 +99,26 @@ def configure_lab_zones(child_zone: str, parent_zone: str | None = None) -> None
     AUTH["com"]["file"] = f"db.{parent_zone.rstrip('.')}"
     AUTH["example"]["zone"] = child_zone
     AUTH["example"]["file"] = f"db.{child_zone.rstrip('.')}"
+    if ns_names:
+        AUTH["example"]["ns_names"] = tuple(ns_names)
 
 
 def reset_lab_zones() -> None:
     configure_lab_zones("example.com.", "com.")
+    AUTH["example"].pop("ns_names", None)
+
+
+def ns_labels(zone_name: str) -> tuple[str, ...]:
+    return AUTH[zone_name].get("ns_names") or ("ns",)
+
+
+def ns_fqdns(zone_name: str) -> tuple[str, ...]:
+    zone = AUTH[zone_name]["zone"]
+    return tuple(f"{label}.{zone}" for label in ns_labels(zone_name))
 
 
 def zone_ns(zone_name: str) -> str:
-    return "ns." + AUTH[zone_name]["zone"]
+    return ns_fqdns(zone_name)[0]
 
 
 def lab_name(name: str) -> str:
@@ -396,8 +411,8 @@ def write_zone_files(scenario: str, *, include_example_ds: bool = True, include_
 $TTL {example_ttl}
 @ IN SOA {child_ns} hostmaster.{child_zone} (
     {SERIAL} {example_ttl} 300 1200 300 )
-@ IN NS {child_ns}
-ns IN A {AUTH["example"]["ip"]}
+{chr(10).join(f"@ IN NS {ns}" for ns in ns_fqdns("example"))}
+{chr(10).join(f"{ns[:-len(child_zone)].rstrip('.')} IN A {AUTH['example']['ip']}" for ns in ns_fqdns("example"))}
 www IN A 192.0.2.10
 @ IN TXT "dnssec lab example zone"
 {extra_example_records}
@@ -412,6 +427,8 @@ www IN A 192.0.2.10
         if include_dsync
         else ""
     )
+    child_ns_lines = "\n".join(f"{child_zone} IN NS {ns}" for ns in ns_fqdns("example"))
+    child_glue_lines = "\n".join(f"{ns} IN A {AUTH['example']['ip']}" for ns in ns_fqdns("example"))
     (ZONES / "com" / AUTH["com"]["file"]).write_text(
         f"""$ORIGIN {parent_zone}
 $TTL 300
@@ -419,8 +436,8 @@ $TTL 300
     {SERIAL} 300 300 1200 300 )
 @ IN NS {parent_ns}
 ns IN A {AUTH["com"]["ip"]}
-{child_zone} IN NS {child_ns}
-{child_ns} IN A {AUTH["example"]["ip"]}
+{child_ns_lines}
+{child_glue_lines}
 dsync-receiver IN A {AUTH["com"]["ip"]}
 {dsync_line}
 {example_ds if include_example_ds else ""}

@@ -296,6 +296,11 @@ def write_unsigned_child_with_records(records: tuple[ImportedRecord, ...]) -> No
     record_lines = "\n".join(record.to_zone_line() for record in records)
     child_zone = dnssec_lab.AUTH["example"]["zone"]
     child_ns = dnssec_lab.zone_ns("example")
+    ns_lines = "\n".join(f"@ IN NS {ns}" for ns in dnssec_lab.ns_fqdns("example"))
+    glue_lines = "\n".join(
+        f"{ns[:-len(child_zone)].rstrip('.')} IN A {dnssec_lab.AUTH['example']['ip']}"
+        for ns in dnssec_lab.ns_fqdns("example")
+    )
     if not record_lines:
         record_lines = f'www.{child_zone} 300 IN A 192.0.2.10\n{child_zone} 300 IN TXT "dnssec lab example zone"'
     child_signals = "\n".join(
@@ -309,8 +314,8 @@ def write_unsigned_child_with_records(records: tuple[ImportedRecord, ...]) -> No
 $TTL 300
 @ IN SOA {child_ns} hostmaster.{child_zone} (
     {dnssec_lab.SERIAL} 300 300 1200 300 )
-@ IN NS {child_ns}
-ns IN A {dnssec_lab.AUTH["example"]["ip"]}
+{ns_lines}
+{glue_lines}
 {record_lines}
 {child_signals}
 """,
@@ -433,10 +438,12 @@ def deploy_realcase(
     axfr_server: str | None = None,
     axfr_port: int = 53,
     allow_partial_records: bool = False,
+    ns_names: tuple[str, ...] | None = None,
+    public_ip: str | None = None,
 ) -> RealcaseDeployResult:
     backend = repair.normalize_backend(backend)
     domain = _absolute_name(domain)
-    dnssec_lab.configure_lab_zones(domain)
+    dnssec_lab.configure_lab_zones(domain, ns_names=ns_names)
     qnames = tuple(_absolute_name(item) for item in (qnames or _default_qnames(domain)))
     prefix = prefix or f"deploy-realcase-{_safe_label(domain)}"
     out_dir = out_dir or (dnssec_lab.ROOT / "realcase-live" / _safe_label(domain) / "deploy")
@@ -517,6 +524,7 @@ def deploy_realcase(
         out_dir,
         source_domain=domain,
         purpose="deploy DNSSEC locally from public resolution-chain/business records",
+        public_ip=public_ip,
     )
     return RealcaseDeployResult(
         source_domain=domain,

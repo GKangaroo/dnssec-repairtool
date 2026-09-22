@@ -399,6 +399,8 @@ def main() -> None:
     p.add_argument("--axfr-server", default=None, help="authoritative server that permits AXFR")
     p.add_argument("--axfr-port", type=int, default=53)
     p.add_argument("--allow-partial-records", action="store_true", help="allow an incomplete recursive-DNS sample for lab-only use")
+    p.add_argument("--ns-names", default=None, help="comma-separated child NS labels, e.g. ns1,ns2 (must match the parent-side delegation)")
+    p.add_argument("--public-ip", default=None, help="public server IP; rewrites exported glue/listen addresses for production handoff")
     p.add_argument("--prefix", default=None)
     p.add_argument("--out-dir", type=Path, default=None)
     p.add_argument("--no-verify", action="store_true")
@@ -500,6 +502,8 @@ def main() -> None:
             axfr_server=args.axfr_server,
             axfr_port=args.axfr_port,
             allow_partial_records=args.allow_partial_records,
+            ns_names=tuple(args.ns_names.split(",")) if args.ns_names else None,
+            public_ip=args.public_ip,
         )
         text = json.dumps(asdict(result), ensure_ascii=False, indent=2)
         if args.out:

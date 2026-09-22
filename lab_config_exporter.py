@@ -3,7 +3,9 @@
 
 from __future__ import annotations
 
+import re
 import shutil
+import subprocess
 from pathlib import Path
 
 import dnssec_lab
@@ -146,12 +148,99 @@ def _copy_zone_tree(dst_dir: Path) -> list[str]:
     return copied
 
 
+def _productionize_child_zone(bundle: Path, public_ip: str) -> list[str]:
+    """Rewrite child-zone NS glue to the public IP and re-sign in place.
+
+    The lab signs zones that point at 127.10.0.x loopback addresses so the
+    three-node lab can run on one host. For a production handoff the glue must
+    match the parent-side delegation, so we substitute the real address and
+    re-sign with the same keys (DS/CDS/CDNSKEY are unaffected by A records).
+    """
+    meta = dnssec_lab.AUTH["example"]
+    zone = meta["zone"]
+    label = _zone_dir_label("example")
+    zone_dir = bundle / "zones" / label
+    unsigned = zone_dir / meta["file"]
+    signed = zone_dir / f"{meta['file']}.signed"
+    if not unsigned.is_file():
+        return []
+    text = unsigned.read_text(encoding="ascii")
+    lab_ip = meta["ip"]
+    replaced = 0
+    for ns_label in dnssec_lab.ns_labels("example"):
+        old = f"{ns_label} IN A {lab_ip}"
+        new = f"{ns_label} IN A {public_ip}"
+        if old in text:
+            text = text.replace(old, new)
+            replaced += 1
+    if not replaced:
+        return []
+    unsigned.write_text(text, encoding="ascii")
+    subprocess.run(
+        [
+            "dnssec-signzone",
+            "-S",
+            "-K",
+            str(dnssec_lab.KEYS / "example"),
+            "-o",
+            zone,
+            "-f",
+            str(signed),
+            "-e",
+            dnssec_lab.FUTURE_END,
+            str(unsigned),
+        ],
+        check=True,
+        capture_output=True,
+        cwd=str(zone_dir),
+    )
+    return [f"child glue A records rewritten to {public_ip} and zone re-signed"]
+
+
+def _productionize_named_conf(bundle: Path, public_ip: str) -> list[str]:
+    """Make the child authoritative named.conf listen for the public service.
+
+    Also rewrites the container-absolute bundle paths to be relative to the
+    bundle root, so the handoff package is portable across hosts (run named
+    from the bundle root, e.g. ``named -c named-conf/<zone>.conf``).
+    """
+    changed: list[str] = []
+    child_export = _export_name("example")
+    for conf in sorted((bundle / "named-conf").glob(f"named-{child_export}.conf")):
+        text = conf.read_text(encoding="ascii")
+        lab_ip = dnssec_lab.AUTH["example"]["ip"]
+        if f"{{ {lab_ip}; }};" in text:
+            text = text.replace(f"{{ {lab_ip}; }};", "{ any; };")
+            changed.append(f"{conf.name}: listen-on {lab_ip} -> any")
+        # 容器绝对路径 -> 相对 bundle 根（配合 directory "."，从包根启动 named）
+        text = text.replace(f'directory "{bundle}";', 'directory ".";')
+        text = text.replace(f"{bundle}/", "")
+        conf.write_text(text, encoding="ascii")
+    return changed
+
+
+def _productionize_powerdns_conf(bundle: Path, public_ip: str) -> list[str]:
+    changed: list[str] = []
+    conf_dir = bundle / "powerdns-conf"
+    if not conf_dir.is_dir():
+        return changed
+    lab_ip = dnssec_lab.AUTH["example"]["ip"]
+    for conf in sorted(conf_dir.glob("pdns-*.conf")):
+        text = conf.read_text(encoding="ascii")
+        if f"local-address={lab_ip}" in text:
+            text = text.replace(f"local-address={lab_ip}", "local-address=0.0.0.0")
+            conf.write_text(text, encoding="ascii")
+            changed.append(f"{conf.name}: local-address {lab_ip} -> 0.0.0.0")
+    return changed
+
+
 def export_config_bundle(
     backend: str,
     out_dir: Path,
     *,
     source_domain: str | None = None,
     purpose: str,
+    public_ip: str | None = None,
 ) -> str:
     backend = repair.normalize_backend(backend)
     bundle = out_dir / f"{backend}-config"
@@ -170,27 +259,46 @@ def export_config_bundle(
     copied.extend(_copy_zone_tree(bundle / "zones"))
     copied.extend(_copy_matching(dnssec_lab.OUT, bundle / "dnsviz-output", ("*.grok.json", "*.repair-plan.json")))
 
+    if public_ip:
+        if backend == "bind9":
+            _productionize_child_zone(bundle, public_ip)
+            _productionize_named_conf(bundle, public_ip)
+        else:
+            _productionize_child_zone(bundle, public_ip)
+            _productionize_powerdns_conf(bundle, public_ip)
+
     readme = bundle / "README.txt"
     backend_dir = "named-conf/" if backend == "bind9" else "powerdns-conf/"
-    readme.write_text(
-        "\n".join(
-            [
-                f"Purpose: {purpose}",
-                f"Backend: {backend}",
-                f"Source domain: {source_domain or 'N/A'}",
-                "",
-                "Start here:",
-                f"1. {backend_dir} contains authoritative DNS configuration.",
-                "2. zones/ contains the repaired unsigned and signed zone files.",
-                "3. dnsviz-output/ contains the repair plan and before/after grok summaries.",
-                "",
-                "Notes:",
-                "- This is a local lab bundle, not a direct registrar/API change.",
-                "- For DNSSEC, the key user-visible parent-side change is the child DS record.",
-                "- Large DNSViz probe captures and dsset helper files are intentionally omitted from this bundle.",
-                "",
-            ]
-        ),
-        encoding="utf-8",
-    )
+    lines = [
+        f"Purpose: {purpose}",
+        f"Backend: {backend}",
+        f"Source domain: {source_domain or 'N/A'}",
+        "",
+        "Start here:",
+        f"1. {backend_dir} contains authoritative DNS configuration.",
+        "2. zones/ contains the repaired unsigned and signed zone files.",
+        "3. dnsviz-output/ contains the repair plan and before/after grok summaries.",
+        "",
+    ]
+    if public_ip:
+        lines += [
+            "Production mode (--public-ip was given):",
+            f"- Child zone NS glue A records were rewritten to {public_ip} and the zone was re-signed.",
+            f"- {backend_dir} listens on {'any' if backend == 'bind9' else '0.0.0.0'} instead of the lab loopback.",
+            "- Paths in the config are relative to this bundle root; run named from here:",
+            "    mkdir -p run && named -c named-conf/<zone>.conf",
+            "- Deploy: load zones/<domain>/<file>.signed plus the key material, run the backend on port 53,",
+            "  make sure the parent-side delegation (NS + glue) matches these NS names, then wait for",
+            "  the registry CDS scanner (e.g. fuyu) to publish the child DS from the CDS/CDNSKEY records.",
+            "",
+        ]
+    else:
+        lines += [
+            "Notes:",
+            "- This is a local lab bundle, not a direct registrar/API change.",
+            "- For DNSSEC, the key user-visible parent-side change is the child DS record.",
+            "- Large DNSViz probe captures and dsset helper files are intentionally omitted from this bundle.",
+            "",
+        ]
+    readme.write_text("\n".join(lines), encoding="utf-8")
     return str(bundle)
