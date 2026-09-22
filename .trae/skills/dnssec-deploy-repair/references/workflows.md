@@ -193,6 +193,29 @@ realcase-live/<domain>/deploy/bind9-config/
 realcase-live/<domain>/deploy/powerdns-config/
 ```
 
+Default bundles target the local lab (listen-on 127.10.0.x, a single `ns.`
+host) and are not directly deployable. To export a production-ready bundle,
+add `--ns-names` and `--public-ip`:
+
+```bash
+python3 dnssec_repair_engine.py deploy-realcase \
+  --backend bind9 \
+  --domain example.org \
+  --allow-partial-records \
+  --ns-names ns1,ns2 \
+  --public-ip 203.0.113.10
+```
+
+`--ns-names` must exactly match the parent-side delegation and glue, or global
+resolution goes LAME. With `--public-ip` the export rewrites the child NS glue
+A records to that IP, re-signs the zone with the same keys (DS/CDS/CDNSKEY are
+unaffected), sets `listen-on any` (PowerDNS: `local-address=0.0.0.0`), and
+relativizes paths so the bundle is portable (`named -c named-conf/<zone>.conf`
+from the bundle root). The child then publishes CDS/CDNSKEY and the registry
+CDS scanner (e.g. fuyu) syncs the DS into the parent automatically; no manual
+registrar DS entry is needed. The bundle does not include key material — carry
+the lab `keys/` directory or regenerate keys on the target host.
+
 ## Repair A Public DNSSEC Case In The Local Lab
 
 The command captures an arbitrary public case, builds its plan directly from

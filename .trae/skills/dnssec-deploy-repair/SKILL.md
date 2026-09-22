@@ -27,6 +27,8 @@ The tool controls a local `root -> parent -> child` authority chain. It can:
 It does not automatically change a public authoritative service, registrar, or
 parent registry. `repair-realcase` repairs a local reproduction. Treat an
 exported bundle as a deployment candidate that still needs operator review.
+Default bundles are lab-shaped; use `deploy-realcase --ns-names ... --public-ip
+...` to export a production-ready bundle (see references/workflows.md).
 
 Before any state-changing command:
 

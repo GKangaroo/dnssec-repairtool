@@ -134,6 +134,29 @@ realcase-live/example.org/deploy/bind9-config/
 realcase-live/example.org/deploy/powerdns-config/
 ```
 
+#### Production-ready bundles (`--ns-names` / `--public-ip`)
+
+By default the exported bundle targets the local lab (listen-on 127.10.0.x, a single `ns.` host), so it cannot go live as-is. Add these flags to export a **directly deployable** bundle:
+
+```bash
+python3 dnssec_repair_engine.py deploy-realcase \
+  --backend bind9 \
+  --domain example.org \
+  --allow-partial-records \
+  --ns-names ns1,ns2 \
+  --public-ip 203.0.113.10
+```
+
+- `--ns-names`: child-zone NS labels (comma-separated). They **must exactly match the parent-side delegation and glue**, otherwise global resolution goes LAME.
+- `--public-ip`: the authoritative server's public IP. When set, the export will:
+  1. rewrite the child NS glue A records to that IP and re-sign the zone with the same keys (DS/CDS/CDNSKEY are unaffected);
+  2. set `listen-on any` in `named.conf` (PowerDNS: `local-address=0.0.0.0`);
+  3. relativize container-absolute paths so the whole bundle is portable — run `named -c named-conf/<zone>.conf` from the bundle root.
+
+After deployment the child publishes CDS/CDNSKEY; the registry CDS scanner (e.g. Verisign's fuyu, typically 24–48 hours) automatically syncs the DS into the parent — **no manual DS entry at the registrar is needed**. Verify with `dig +dnssec example.org A` (RRSIG present) and `delv example.org A` (fully validated).
+
+Note: the bundle does not include key material (KSK/ZSK). Carry the lab's `keys/` directory along when deploying, or regenerate keys on the target host and re-run the export.
+
 ### 2. Arbitrary public DNSSEC error + local normalized repair
 
 `repair-realcase` no longer chooses a canned scenario from the domain name. It builds the repair plan directly from a live DNSViz grok result, or from an offline capture supplied with `--grok`, and applies that plan to a controlled local copy that preserves the imported business records.

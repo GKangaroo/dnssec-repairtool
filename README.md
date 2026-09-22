@@ -124,6 +124,29 @@ realcase-live/example.org/deploy/bind9-config/
 realcase-live/example.org/deploy/powerdns-config/
 ```
 
+#### 生产模式配置包（`--ns-names` / `--public-ip`）
+
+默认导出的配置包面向本地 lab（监听 127.10.0.x 虚拟地址、单一 `ns.` 主机名），不能直接上线。加上以下参数可导出**可直接部署**的配置包：
+
+```bash
+python3 dnssec_repair_engine.py deploy-realcase \
+  --backend bind9 \
+  --domain example.org \
+  --allow-partial-records \
+  --ns-names ns1,ns2 \
+  --public-ip 203.0.113.10
+```
+
+- `--ns-names`：子区 NS 主机名标签（逗号分隔），**必须与父区/注册商侧的委派和 glue 完全一致**，否则全球解析会 LAME。
+- `--public-ip`：权威服务器公网 IP。导出时会：
+  1. 把子区 NS 的 glue A 记录改写为该公网 IP，并用原密钥重新签名（DS/CDS/CDNSKEY 不受影响）；
+  2. 把 `named.conf` 的 `listen-on` 改为 `any`（PowerDNS 为 `local-address=0.0.0.0`）；
+  3. 把配置里的容器绝对路径相对化，整个 bundle 可拷贝到任意主机，从包根目录直接 `named -c named-conf/<zone>.conf` 启动。
+
+部署后子区会发布 CDS/CDNSKEY，等待注册局 CDS 扫描服务（如 Verisign 的 fuyu，通常 24–48 小时）自动把 DS 同步进父区，**无需在注册商手动填 DS**。验证：`dig +dnssec example.org A` 应答带 RRSIG，`delv example.org A` 报 fully validated。
+
+注意：配置包不含密钥文件（KSK/ZSK 私钥），上线时需一并带走 lab 的 `keys/` 目录，或改在目标机上用 `dnssec-keygen` 重新生成并重新走一遍导出。
+
 ### 2. 任意现网 DNSSEC 错误 + 本地规约修复
 
 `repair-realcase` 不再按域名选择预制 scenario。它直接使用目标域名的实时 DNSViz grok，或使用 `--grok` 指定的离线采集结果生成修复计划，并将计划应用到保留业务记录的本地受控副本。
